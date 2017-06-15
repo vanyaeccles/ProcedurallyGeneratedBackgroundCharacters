@@ -1,65 +1,82 @@
-﻿using System.Collections;
+﻿using UnityEngine;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
 
+[Serializable]
+[AddComponentMenu("UtilityAI/Action")]
 public class ActionBehaviour : MonoBehaviour
 {
 
-    public string actionName;
-    public float utilityValueTotal;
+    public float time;
+    public delegate void Del();
+    public Del handle;
+    public int priorityLevel;
+    public bool interruptible;
+
+    //appropriate weighted considerations
+    public List<ActionConsideration> considerations = new List<ActionConsideration>();
+
+    private float actionUtilScore;
 
 
-    public bool isEvaluating;
 
-    
-    public List<ActionConsiderations> actionConsiderations;
-
-
+    // Parent Action fields
+    public bool isLeafAction = false;
+    public List<LinkedActionBehaviour> linkedChildActions = new List<LinkedActionBehaviour>();
 
 
+
+
+   
 
     #region Utility Evaluation
 
-    public float EvaluateUtility(Agent agent)
-    {
-        EvaluateActionConsiderations(agent);
-
-        return utilityValueTotal;
-    }
-
     //Evaluate overall utility for the action
-    public void EvaluateActionConsiderations(Agent agent)
+    public void EvaluateActionUtil()
     {
-        resetUtilityTotal();
-
-        int numbEvaluatedConsiderations = 0;
-        
-        for(int i = 0; i < actionConsiderations.Count; i++)
+        actionUtilScore = 0.0f;
+        int enabledConsiderationsCount = 0;
+        //evaluate appropriate considerations
+        for (int i = 0; i < considerations.Count; i++)
         {
-            if(actionConsiderations[i].enabled)
+            //calc utility score if the consideration is enabled
+            if (considerations[i].enabled)
             {
-                utilityValueTotal += actionConsiderations[i].utilityValue * actionConsiderations[i].considerationWeight;
-                numbEvaluatedConsiderations++;
+                actionUtilScore += considerations[i].evaluateConsiderationUtil * considerations[i].weight;
+                enabledConsiderationsCount++;
             }
         }
-
-        utilityValueTotal /= numbEvaluatedConsiderations;
+        //determine average from accumulated utility score
+        actionUtilScore = actionUtilScore / enabledConsiderationsCount;
     }
+   
 
-    private void resetUtilityTotal()
+    public float GetActionScore()
     {
-        utilityValueTotal = 0.0f;
+        return actionUtilScore;
+    }
+    public void SetActionScore(float val)
+    {
+        actionUtilScore = val;
     }
 
     #endregion
-
-
-
-
 
 
 
     #region Behaviour
 
+    public void ExecuteBehaviour()
+    {
+
+        //Each action could have a destination or a set of animations
+
+        // Could also have an effect on the agent's state parameters, see Character script
+
+    }
+
+
     #endregion
+
+
 }
