@@ -1,33 +1,222 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 [Serializable]
 [AddComponentMenu("UtilityAI/Action")]
 public class ActionBehaviour : MonoBehaviour
 {
+    // Parent Action fields
+    public bool isRootAction = false;
+    public bool isLeafAction = false;
 
+    private float actionUtilScore;
     public float time;
     public delegate void Del();
     public Del handle;
     public int priorityLevel;
     public bool interruptible;
 
+    public int historyStates = 10;
+    public float secondsBetweenEvaluations = 0.0f;
+
+    private ActionBehaviour previousAction, topAction;
+    private float currentActionScore, topActionScore;
+    private bool isTiming = true;
+    private bool paused = false;
+    private int topLinkedActionIndex;
+
+    //[HideInInspector]
+    //public List<LinkedActionBehaviour> linkedRootActions = new List<LinkedActionBehaviour>();
+    [HideInInspector]
+    public List<string> actionHistory = new List<string>();
+    //[HideInInspector]
+    public float actionTimer = 0.0f;
+    [HideInInspector]
+    public bool newAction;
+
+
+
     //appropriate weighted considerations
     public List<ActionConsideration> considerations = new List<ActionConsideration>();
 
-    private float actionUtilScore;
-
-
-
-    // Parent Action fields
-    public bool isLeafAction = false;
     public List<LinkedActionBehaviour> linkedChildActions = new List<LinkedActionBehaviour>();
 
 
+    void Awake()
+    {
+        if(isRootAction)
+        {
+            isTiming = false;
+        }
+    }
 
 
-   
+
+
+    public void DisableAction(string actionName)
+    {
+        for (int i = 0; i < linkedChildActions.Count; i++)
+        {
+            if (linkedChildActions[i].action.name == actionName)
+            {
+                linkedChildActions[i].isActionEnabled = false;
+                linkedChildActions[i].action.SetActionScore(0.0f);
+
+                //if (consoleLogging)
+                //    Debug.Log(agentName + ". Action Disabled: " + actionName);
+            }
+        }
+    }
+
+    public void UpdateAction()
+    {
+        if (paused)
+        {
+            Debug.Log("paused");
+            return;
+        }
+
+        if (isTiming)
+        {
+            actionTimer -= UtilityTime.time;
+        }
+
+        if (topAction == null && !isLeafAction)
+        {
+            EvaluateChildActions();
+            actionTimer = GetTopAction().time;
+        }
+        else
+        {
+            //Begin timing the action
+            StartTimer();
+        }
+
+        //Performs the action as specified in Character.cs, updates the agent parameters etc as specified
+        if(!isLeafAction)
+        {
+            if (GetTopAction().isLeafAction)
+                GetTopAction().handle();
+        }
+
+
+
+        if (isRootAction)
+            return;
+
+        if (actionTimer <= 0.0f) //this could be optimised
+        { // action ended
+
+            Debug.Log(name + " action ended");
+
+
+            StopTimer();
+
+            if(!isLeafAction)
+            {
+                EvaluateChildActions();
+
+                actionTimer = GetTopAction().time;
+            }
+        }
+    }
+
+
+
+
+    public void StartTimer()
+    {
+        if(!isRootAction)
+            isTiming = true;
+    }
+
+    public void StopTimer()
+    {
+        isTiming = false;
+    }
+
+
+
+    public float EvaluateChildActions()
+    {
+        if (isLeafAction)
+            return 0.0f;
+
+        Debug.Log("Evaluating " + name + "'s child actions");
+
+        if (topAction != null)
+            previousAction = topAction;
+
+        topActionScore = 0.0f;
+
+
+        for (int i = 0; i < linkedChildActions.Count; i++)
+        {
+            if (linkedChildActions[i].isActionEnabled == true)
+            {
+                linkedChildActions[i].action.EvaluateActionUtil();
+                if (linkedChildActions[i].action.GetActionScore() > topActionScore)
+                {
+                    topAction = linkedChildActions[i].action;
+                    topActionScore = linkedChildActions[i].action.GetActionScore();
+                    topLinkedActionIndex = i;
+                }
+            }
+        }
+
+        if (topAction != previousAction)
+            newAction = true;
+        else
+            StartTimer();
+
+        
+
+        actionHistory.Add(topAction.name);
+
+        if (actionHistory.Count > historyStates)
+        {
+            actionHistory.RemoveAt(0);
+        }
+
+        if (linkedChildActions[topLinkedActionIndex].cooldown > 0.0f)
+        {
+            DisableAction(linkedChildActions[topLinkedActionIndex].action.name);
+            StartCoroutine(CooldownAction(topLinkedActionIndex));
+        }
+
+        if(!isLeafAction)
+            topAction.UpdateAction();
+
+
+        //if (consoleLogging)
+        //    Debug.Log(agentName + ". New topAction: " + topAction.name + ". With actionScore: " + topActionScore);
+
+        currentActionScore = topActionScore;
+        return topActionScore;
+    }
+
+
+
+    public ActionBehaviour GetTopAction()
+    {
+        return topAction;
+    }
+
+    IEnumerator CooldownAction(int i)
+    {
+        while (linkedChildActions[i].cooldown >= linkedChildActions[i].cooldownTimer)
+        {
+            linkedChildActions[i].cooldownTimer += UtilityTime.time;
+            yield return new WaitForEndOfFrame();
+        }
+        linkedChildActions[i].isActionEnabled = true;
+        linkedChildActions[i].cooldownTimer = 0.0f;
+    }
+
+
+
 
     #region Utility Evaluation
 
@@ -61,6 +250,9 @@ public class ActionBehaviour : MonoBehaviour
     }
 
     #endregion
+
+
+
 
 
 
