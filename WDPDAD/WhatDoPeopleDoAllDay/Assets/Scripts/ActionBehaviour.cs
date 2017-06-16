@@ -46,30 +46,13 @@ public class ActionBehaviour : MonoBehaviour
 
     void Awake()
     {
-        if(isRootAction)
-        {
-            isTiming = false;
-        }
+
     }
 
 
 
 
-    public void DisableAction(string actionName)
-    {
-        for (int i = 0; i < linkedChildActions.Count; i++)
-        {
-            if (linkedChildActions[i].action.name == actionName)
-            {
-                linkedChildActions[i].isActionEnabled = false;
-                linkedChildActions[i].action.SetActionScore(0.0f);
-
-                //if (consoleLogging)
-                //    Debug.Log(agentName + ". Action Disabled: " + actionName);
-            }
-        }
-    }
-
+    
     public void UpdateAction()
     {
         if (paused)
@@ -78,12 +61,15 @@ public class ActionBehaviour : MonoBehaviour
             return;
         }
 
+        if (isLeafAction)
+            return;
+
         if (isTiming)
         {
             actionTimer -= UtilityTime.time;
         }
 
-        if (topAction == null && !isLeafAction)
+        if (topAction == null)
         {
             EvaluateChildActions();
             actionTimer = GetTopAction().time;
@@ -95,18 +81,13 @@ public class ActionBehaviour : MonoBehaviour
         }
 
         //Performs the action as specified in Character.cs, updates the agent parameters etc as specified
-        if(!isLeafAction)
-        {
-            if (GetTopAction().isLeafAction)
+        if (GetTopAction().isLeafAction)
                 GetTopAction().handle();
-        }
 
 
+ 
 
-        if (isRootAction)
-            return;
-
-        if (actionTimer <= 0.0f) //this could be optimised
+        if (actionTimer <= 0.0f /*&& !isLeafAction && !isRootAction*/) //this could be optimised
         { // action ended
 
             Debug.Log(name + " action ended");
@@ -114,12 +95,9 @@ public class ActionBehaviour : MonoBehaviour
 
             StopTimer();
 
-            if(!isLeafAction)
-            {
-                EvaluateChildActions();
+            EvaluateChildActions();
 
-                actionTimer = GetTopAction().time;
-            }
+            actionTimer = GetTopAction().time;
         }
     }
 
@@ -128,8 +106,7 @@ public class ActionBehaviour : MonoBehaviour
 
     public void StartTimer()
     {
-        if(!isRootAction)
-            isTiming = true;
+        isTiming = true;
     }
 
     public void StopTimer()
@@ -138,11 +115,9 @@ public class ActionBehaviour : MonoBehaviour
     }
 
 
-
+    //Takes a look at child actions and picks the one with best utility score
     public float EvaluateChildActions()
     {
-        if (isLeafAction)
-            return 0.0f;
 
         Debug.Log("Evaluating " + name + "'s child actions");
 
@@ -173,21 +148,22 @@ public class ActionBehaviour : MonoBehaviour
 
         
 
-        actionHistory.Add(topAction.name);
+        //actionHistory.Add(topAction.name);
 
-        if (actionHistory.Count > historyStates)
-        {
-            actionHistory.RemoveAt(0);
-        }
+        //if (actionHistory.Count > historyStates)
+        //{
+        //    actionHistory.RemoveAt(0);
+        //}
 
-        if (linkedChildActions[topLinkedActionIndex].cooldown > 0.0f)
-        {
-            DisableAction(linkedChildActions[topLinkedActionIndex].action.name);
-            StartCoroutine(CooldownAction(topLinkedActionIndex));
-        }
+        //if (linkedChildActions[topLinkedActionIndex].cooldown > 0.0f)
+        //{
+        //    DisableAction(linkedChildActions[topLinkedActionIndex].action.name);
+        //    StartCoroutine(CooldownAction(topLinkedActionIndex));
+        //}
 
-        if(!isLeafAction)
-            topAction.UpdateAction();
+
+        //This is where the child actions are simultaneously told to perform their own evaluations
+        topAction.UpdateAction();
 
 
         //if (consoleLogging)
@@ -203,6 +179,23 @@ public class ActionBehaviour : MonoBehaviour
     {
         return topAction;
     }
+
+
+    public void DisableAction(string actionName)
+    {
+        for (int i = 0; i < linkedChildActions.Count; i++)
+        {
+            if (linkedChildActions[i].action.name == actionName)
+            {
+                linkedChildActions[i].isActionEnabled = false;
+                linkedChildActions[i].action.SetActionScore(0.0f);
+
+                //if (consoleLogging)
+                //    Debug.Log(agentName + ". Action Disabled: " + actionName);
+            }
+        }
+    }
+
 
     IEnumerator CooldownAction(int i)
     {
