@@ -80,6 +80,11 @@ public class ActionBehaviour : MonoBehaviour
             StartTimer();
         }
 
+
+        //This is where the child actions are simultaneously told to perform their own evaluations
+        topAction.UpdateAction();
+
+
         //Performs the action as specified in Character.cs, updates the agent parameters etc as specified
         if (GetTopAction().isLeafAction)
                 GetTopAction().handle();
@@ -87,7 +92,7 @@ public class ActionBehaviour : MonoBehaviour
 
  
 
-        if (actionTimer <= 0.0f /*&& !isLeafAction && !isRootAction*/) //this could be optimised
+        if (actionTimer <= 0.0f) 
         { // action ended
 
             Debug.Log(name + " action ended");
@@ -162,12 +167,11 @@ public class ActionBehaviour : MonoBehaviour
         //}
 
 
-        //This is where the child actions are simultaneously told to perform their own evaluations
-        topAction.UpdateAction();
+        
 
 
         //if (consoleLogging)
-        //    Debug.Log(agentName + ". New topAction: " + topAction.name + ". With actionScore: " + topActionScore);
+            Debug.Log(name + ". New topAction: " + topAction.name + ". With actionScore: " + topActionScore);
 
         currentActionScore = topActionScore;
         return topActionScore;
