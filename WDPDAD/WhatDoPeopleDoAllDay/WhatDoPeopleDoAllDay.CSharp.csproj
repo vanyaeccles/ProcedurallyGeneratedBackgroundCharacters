@@ -75,6 +75,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Models\Standard Assets\Water (Basic)\Scripts\WaterBasic.cs" />
     <Compile Include="Assets\Scripts\ActionBehaviour.cs" />
     <Compile Include="Assets\Scripts\ActionConsideration.cs" />
     <Compile Include="Assets\Scripts\Agent.cs" />
@@ -82,7 +83,16 @@
     <Compile Include="Assets\Scripts\AgentStateVarFloat.cs" />
     <Compile Include="Assets\Scripts\Character.cs" />
     <Compile Include="Assets\Scripts\LinkedActionBehaviour.cs" />
+    <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\SimpleAgent\NavAgent.cs" />
     <Compile Include="Assets\Scripts\UtilityTime.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Models\Mega Fantasy Props Pack\README.txt" />
+    <None Include="Assets\Models\Standard Assets\Water (Basic)\Sources\Shaders\FX-Water Simple.shader" />
+    <None Include="Assets\Models\Stykized Vegetation Pack Free\Readme.txt" />
+    <None Include="Assets\Models\Willage Cart (Central Asia)\ReadMe.txt" />
+    <None Include="Assets\Nature\Wispy Sky\ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

@@ -16,7 +16,8 @@ public class ActionBehaviour : MonoBehaviour
     public delegate void Del();
     public Del handle;
     public int priorityLevel;
-    public bool interruptible;
+    public bool isInterruptible;
+    public bool isConsoleLogging;
 
     public int historyStates = 10;
     public float secondsBetweenEvaluations = 0.0f;
@@ -24,11 +25,10 @@ public class ActionBehaviour : MonoBehaviour
     private ActionBehaviour previousAction, topAction;
     private float currentActionScore, topActionScore;
     private bool isTiming = true;
-    private bool paused = false;
+    private bool isPaused = false;
     private int topLinkedActionIndex;
 
-    //[HideInInspector]
-    //public List<LinkedActionBehaviour> linkedRootActions = new List<LinkedActionBehaviour>();
+
     [HideInInspector]
     public List<string> actionHistory = new List<string>();
     //[HideInInspector]
@@ -40,14 +40,9 @@ public class ActionBehaviour : MonoBehaviour
 
     //appropriate weighted considerations
     public List<ActionConsideration> considerations = new List<ActionConsideration>();
-
+    //child actions
     public List<LinkedActionBehaviour> linkedChildActions = new List<LinkedActionBehaviour>();
 
-
-    void Awake()
-    {
-
-    }
 
 
 
@@ -55,14 +50,15 @@ public class ActionBehaviour : MonoBehaviour
     
     public void UpdateAction()
     {
-        if (paused)
+        if (isLeafAction) // leaf actions don't update themselves
+            return;
+
+        if (isPaused)
         {
             Debug.Log("paused");
             return;
         }
 
-        if (isLeafAction)
-            return;
 
         if (isTiming)
         {
@@ -70,7 +66,7 @@ public class ActionBehaviour : MonoBehaviour
         }
 
         if (topAction == null)
-        {
+        {   // evaluate + choose a child action
             EvaluateChildActions();
             actionTimer = GetTopAction().time;
         }
@@ -81,13 +77,19 @@ public class ActionBehaviour : MonoBehaviour
         }
 
 
+
         //This is where the child actions are simultaneously told to perform their own evaluations
         topAction.UpdateAction();
 
+        if(isConsoleLogging)
+            Debug.Log(topAction + " running");
 
-        //Performs the action as specified in Character.cs, updates the agent parameters etc as specified
-        if (GetTopAction().isLeafAction)
-                GetTopAction().handle();
+
+
+
+        // Performs the action
+        ExecuteBehaviour();
+        
 
 
  
@@ -95,8 +97,11 @@ public class ActionBehaviour : MonoBehaviour
         if (actionTimer <= 0.0f) 
         { // action ended
 
-            Debug.Log(name + " action ended");
+            if(isConsoleLogging)
+                Debug.Log(name + " action ended");
 
+
+            topAction = null;
 
             StopTimer();
 
@@ -109,22 +114,12 @@ public class ActionBehaviour : MonoBehaviour
 
 
 
-    public void StartTimer()
-    {
-        isTiming = true;
-    }
-
-    public void StopTimer()
-    {
-        isTiming = false;
-    }
+    
 
 
     //Takes a look at child actions and picks the one with best utility score
     public float EvaluateChildActions()
     {
-
-        Debug.Log("Evaluating " + name + "'s child actions");
 
         if (topAction != null)
             previousAction = topAction;
@@ -153,24 +148,7 @@ public class ActionBehaviour : MonoBehaviour
 
         
 
-        //actionHistory.Add(topAction.name);
-
-        //if (actionHistory.Count > historyStates)
-        //{
-        //    actionHistory.RemoveAt(0);
-        //}
-
-        //if (linkedChildActions[topLinkedActionIndex].cooldown > 0.0f)
-        //{
-        //    DisableAction(linkedChildActions[topLinkedActionIndex].action.name);
-        //    StartCoroutine(CooldownAction(topLinkedActionIndex));
-        //}
-
-
-        
-
-
-        //if (consoleLogging)
+        if (isConsoleLogging)
             Debug.Log(name + ". New topAction: " + topAction.name + ". With actionScore: " + topActionScore);
 
         currentActionScore = topActionScore;
@@ -178,6 +156,15 @@ public class ActionBehaviour : MonoBehaviour
     }
 
 
+    public void StartTimer()
+    {
+        isTiming = true;
+    }
+
+    public void StopTimer()
+    {
+        isTiming = false;
+    }
 
     public ActionBehaviour GetTopAction()
     {
@@ -193,9 +180,6 @@ public class ActionBehaviour : MonoBehaviour
             {
                 linkedChildActions[i].isActionEnabled = false;
                 linkedChildActions[i].action.SetActionScore(0.0f);
-
-                //if (consoleLogging)
-                //    Debug.Log(agentName + ". Action Disabled: " + actionName);
             }
         }
     }
@@ -261,6 +245,24 @@ public class ActionBehaviour : MonoBehaviour
         //Each action could have a destination or a set of animations
 
         // Could also have an effect on the agent's state parameters, see Character script
+
+
+        Debug.Log("Going to " + name + " location");
+
+
+
+
+
+        if (isLeafAction)
+            return;
+
+        //Performs the action as specified in Character.cs, updates the agent parameters etc as specified
+        if (GetTopAction().isLeafAction)
+        {
+            GetTopAction().handle();
+            GetTopAction().ExecuteBehaviour();
+        }
+            
 
     }
 
