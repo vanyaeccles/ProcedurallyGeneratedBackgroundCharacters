@@ -14,6 +14,8 @@ public class NavAgent : MonoBehaviour {
 	void Start ()
     {
         agent = GetComponent<NavMeshAgent>();
+
+        //target = GameObject.Find("Market").GetComponent<Transform>();
 	}
 	
 

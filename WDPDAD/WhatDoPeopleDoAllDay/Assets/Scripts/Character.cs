@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-
+using UnityEngine.AI;
 
 
 public class Character : MonoBehaviour
@@ -17,6 +17,13 @@ public class Character : MonoBehaviour
 
 
 
+    // Simple Movement
+
+    NavMeshAgent Walker;
+    public Transform target;
+
+
+
     void Start()
     {
         agent = GetComponent<Agent>();
@@ -30,12 +37,17 @@ public class Character : MonoBehaviour
         agent.SetVoidActionDelegate("Eat", Eat);
         agent.SetVoidActionDelegate("EatExpensive", EatExpensive);
         agent.SetVoidActionDelegate("EatCheap", EatCheap);
+
+        Walker = GetComponent<NavMeshAgent>();
     }
+
 
     // Update is called once per frame
     void Update()
     {
         agent.UpdateAI();
+
+        Walker.SetDestination(target.position);
 
         DisplayStats("energy: " + energy.value.ToString("F0")  + " hunger: " + hunger.value.ToString("F0") + " money: " + money.value.ToString("F0"));
     }
@@ -109,6 +121,10 @@ public class Character : MonoBehaviour
     }
    
 
+
+
+
+
     void Sleep()
     { 
         PerformAction("sleep");
@@ -139,16 +155,12 @@ public class Character : MonoBehaviour
         Speak("Eating Cheap Food");
     }
 
-
-
     void Work()
     {
         PerformAction("work");
 
         Speak("Working");
     }
-
-
 
     void PerformAction(string action)
     {
@@ -165,6 +177,10 @@ public class Character : MonoBehaviour
         }
     }
 
+    public void SetTarget(Transform destination)
+    {
+        target = destination;
+    }
 
 
 

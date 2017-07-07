@@ -10,8 +10,6 @@ public class Agent : MonoBehaviour
     public string agentName;
     public bool consoleLogging = false;
     
-
-
     public LinkedActionBehaviour linkedRootAction = new LinkedActionBehaviour();
 
 
@@ -55,7 +53,6 @@ public class Agent : MonoBehaviour
         action.handle = del;
         return;
     }
-
 
     public void CheckActionChildren(ActionBehaviour action, string name, ActionBehaviour.Del del)
     {

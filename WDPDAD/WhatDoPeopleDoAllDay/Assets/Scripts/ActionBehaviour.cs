@@ -45,7 +45,9 @@ public class ActionBehaviour : MonoBehaviour
 
 
 
-
+    //Behaviour
+    public Transform location;
+    public Character owner;
 
     
     public void UpdateAction()
@@ -73,7 +75,8 @@ public class ActionBehaviour : MonoBehaviour
         else
         {
             //Begin timing the action
-            StartTimer();
+
+            //StartTimer();
         }
 
 
@@ -247,23 +250,29 @@ public class ActionBehaviour : MonoBehaviour
         // Could also have an effect on the agent's state parameters, see Character script
 
 
-        Debug.Log("Going to " + name + " location");
-
-
-
-
+        //Debug.Log("Going to " + name + " location");
 
         if (isLeafAction)
             return;
 
-        //Performs the action as specified in Character.cs, updates the agent parameters etc as specified
-        if (GetTopAction().isLeafAction)
-        {
-            GetTopAction().handle();
-            GetTopAction().ExecuteBehaviour();
-        }
-            
 
+        if(GetTopAction().isLeafAction)
+            owner.SetTarget(GetTopAction().location);
+
+
+        //checks position + begins performing action
+        if (Vector3.Distance(transform.position, GetTopAction().location.position) <= 1.0f)
+        {
+
+            StartTimer();
+
+            //Performs the action as specified in Character.cs, updates the agent parameters etc as specified
+            if (GetTopAction().isLeafAction)
+            {
+                GetTopAction().handle();
+                GetTopAction().ExecuteBehaviour();
+            }   
+        }
     }
 
 
