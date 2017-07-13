@@ -205,16 +205,16 @@ public class ActionBehaviour : MonoBehaviour
     }
 
 
-    IEnumerator CooldownAction(int i)
-    {
-        while (linkedChildActions[i].cooldown >= linkedChildActions[i].cooldownTimer)
-        {
-            linkedChildActions[i].cooldownTimer += UtilityTime.time;
-            yield return new WaitForEndOfFrame();
-        }
-        linkedChildActions[i].isActionEnabled = true;
-        linkedChildActions[i].cooldownTimer = 0.0f;
-    }
+    //IEnumerator CooldownAction(int i)
+    //{
+    //    while (linkedChildActions[i].cooldown >= linkedChildActions[i].cooldownTimer)
+    //    {
+    //        linkedChildActions[i].cooldownTimer += UtilityTime.time;
+    //        yield return new WaitForEndOfFrame();
+    //    }
+    //    linkedChildActions[i].isActionEnabled = true;
+    //    linkedChildActions[i].cooldownTimer = 0.0f;
+    //}
 
 
 
@@ -226,7 +226,15 @@ public class ActionBehaviour : MonoBehaviour
     {
         actionUtilScore = 0.0f;
         int enabledConsiderationsCount = 0;
-        //evaluate appropriate considerations
+
+
+        // if there are no considerations then just pick the action and execute
+        if (considerations.Count == 0)
+        {
+            actionUtilScore = 1.0f;
+            return;
+        }
+        //else evaluate appropriate considerations 
         for (int i = 0; i < considerations.Count; i++)
         {
             //calc utility score if the consideration is enabled

@@ -8,6 +8,6 @@ public class LinkedActionBehaviour
 {
     public ActionBehaviour action;
     public bool isActionEnabled = true;
-    public float cooldown = 0.0f;
-    public float cooldownTimer = 0.0f;
+    //public float cooldown = 0.0f;
+    //public float cooldownTimer = 0.0f;
 }
