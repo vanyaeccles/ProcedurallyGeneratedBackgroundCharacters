@@ -15,7 +15,7 @@ public class ActionBehaviour : MonoBehaviour
     public float time;
     public delegate void Del();
     public Del handle;
-    public int priorityLevel;
+    //public int priorityLevel;
     public bool isInterruptible;
     public bool isConsoleLogging;
 
@@ -46,10 +46,27 @@ public class ActionBehaviour : MonoBehaviour
 
 
     //Behaviour
+    private float Distance2DestinationThresh = 5.0f;
+    private Character owner;
     public Transform location;
-    public Character owner;
+
+
+
+
+    public void Awake()
+    {
+        owner = FindOwner(this.gameObject);
+
+        // Sets the owner for all considerations so they can set their weight vector 
+        for (int i = 0; i < considerations.Count; i++)
+        {
+            considerations[i].owner = this.owner;
+        }
+    }
 
     
+
+
     public void UpdateAction()
     {
         if (isLeafAction) // leaf actions don't update themselves
@@ -255,14 +272,19 @@ public class ActionBehaviour : MonoBehaviour
         if (isLeafAction)
             return;
 
+        
 
-        if(GetTopAction().isLeafAction)
+        if (GetTopAction().isLeafAction)
             owner.SetTarget(GetTopAction().location);
 
+        if(isConsoleLogging)
+            Debug.Log("Distance: " + Vector3.Distance(transform.position, GetTopAction().location.position));
 
         //checks position + begins performing action
-        if (Vector3.Distance(transform.position, GetTopAction().location.position) <= 1.0f)
+        if (Vector3.Distance(transform.position, GetTopAction().location.position) <= Distance2DestinationThresh)
         {
+            Debug.Log("Performing action " + GetTopAction().name);
+
 
             StartTimer();
 
@@ -275,6 +297,29 @@ public class ActionBehaviour : MonoBehaviour
         }
     }
 
+
+    #endregion
+
+
+
+    #region MISC
+
+    public static Character FindOwner(GameObject currentObject)
+    {
+        //Finds the owner of the action behaviour
+        Transform c = currentObject.transform;
+
+        while (c.parent != null)
+        {
+            if (c.parent.tag == "Agent")
+            {
+                return c.parent.gameObject.GetComponent<Character>();
+            }
+
+            c = c.parent.transform;
+        }
+        return null;
+    }
 
     #endregion
 

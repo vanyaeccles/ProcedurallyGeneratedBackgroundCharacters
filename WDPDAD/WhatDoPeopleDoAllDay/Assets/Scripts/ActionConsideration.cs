@@ -11,6 +11,7 @@ public class ActionConsideration
     public float weight = 1.0f;
     public bool enabled = true;
 
+    public Character owner;
 
 
     public float propertyScore
@@ -28,5 +29,11 @@ public class ActionConsideration
         {
             return utilityCurve.Evaluate(agentStatePar.normalizedValue);
         }
+    }
+
+
+    public void GetConsiderationWeight()
+    {
+
     }
 }

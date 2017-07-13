@@ -18,7 +18,6 @@ public class Character : MonoBehaviour
 
 
     // Simple Movement
-
     NavMeshAgent Walker;
     public Transform target;
 
@@ -45,71 +44,26 @@ public class Character : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Perform utility decision making and behaviour
         agent.UpdateAI();
 
+        //Update movement
         Walker.SetDestination(target.position);
 
+        // Show some stuff to UI
         DisplayStats("energy: " + energy.value.ToString("F0")  + " hunger: " + hunger.value.ToString("F0") + " money: " + money.value.ToString("F0"));
     }
 
 
-    #region CONSTRUCTING AGENT VARIABLES
 
-    void ConstructActionModifierDictionary()
+    public void Interrupt()
     {
-        /*
-            State variables:
-            Energy
-            Hunger
-            Money
-        */
 
-        //This is temporary, creates the modification vectors for every action in the game
-        //Important to ensure that the list of state parameters is in the same order as the modification vectors in the dictionary
-        List<float> sleepValues = new List<float>();
-        sleepValues.Add(+10.0f);
-        sleepValues.Add(+5.0f);
-        sleepValues.Add(+0.0f); // the money option in particular could be different, how could the agent's personality specify how much money they spend?
-
-        List<float> eatValues = new List<float>();
-        eatValues.Add(+4.0f);
-        eatValues.Add(-10.0f);
-        eatValues.Add(-5.0f);
-
-        List<float> eatExpensiveValues = new List<float>();
-        eatExpensiveValues.Add(+2.0f);
-        eatExpensiveValues.Add(-8.0f);
-        eatExpensiveValues.Add(-10.0f);
-
-        List<float> eatCheapValues = new List<float>();
-        eatCheapValues.Add(+2.0f);
-        eatCheapValues.Add(-8.0f);
-        eatCheapValues.Add(-5.0f);
-
-        List<float> workValues = new List<float>(); 
-        workValues.Add(-1.0f);
-        workValues.Add(+10.0f);
-        workValues.Add(+20.0f);
-
-        actionModifierDictionary.Add("sleep", sleepValues);
-        actionModifierDictionary.Add("eat", eatValues);
-        actionModifierDictionary.Add("eatexpensive", eatExpensiveValues);
-        actionModifierDictionary.Add("eatcheap", eatCheapValues);
-        actionModifierDictionary.Add("work", workValues);
     }
 
-    // @TODO could automatically add state parameters?
-    void ConstructStateVector()
-    {
-        stateVector.Add(energy);
-        stateVector.Add(hunger);
-        stateVector.Add(money);
-    }
-
-    #endregion
 
 
-
+    #region UI STUFF
 
     void Speak(string sentence)
     {
@@ -119,11 +73,11 @@ public class Character : MonoBehaviour
     {
         stats.text = sentence;
     }
-   
+
+    #endregion
 
 
-
-
+    #region PERFORMING ACTIONS
 
     void Sleep()
     { 
@@ -177,10 +131,72 @@ public class Character : MonoBehaviour
         }
     }
 
+    #endregion
+
+
     public void SetTarget(Transform destination)
     {
         target = destination;
     }
+
+
+
+
+    #region CONSTRUCTING AGENT VARIABLES
+
+    void ConstructActionModifierDictionary()
+    {
+        /*
+            State variables:
+            Energy
+            Hunger
+            Money
+        */
+
+        //This is temporary, creates the modification vectors for every action in the game
+        //Important to ensure that the list of state parameters is in the same order as the modification vectors in the dictionary
+        List<float> sleepValues = new List<float>();
+        sleepValues.Add(+10.0f);
+        sleepValues.Add(+5.0f);
+        sleepValues.Add(+0.0f); // the money option in particular could be different, how could the agent's personality specify how much money they spend?
+
+        List<float> eatValues = new List<float>();
+        eatValues.Add(+4.0f);
+        eatValues.Add(-10.0f);
+        eatValues.Add(-5.0f);
+
+        List<float> eatExpensiveValues = new List<float>();
+        eatExpensiveValues.Add(+2.0f);
+        eatExpensiveValues.Add(-8.0f);
+        eatExpensiveValues.Add(-10.0f);
+
+        List<float> eatCheapValues = new List<float>();
+        eatCheapValues.Add(+2.0f);
+        eatCheapValues.Add(-8.0f);
+        eatCheapValues.Add(-5.0f);
+
+        List<float> workValues = new List<float>();
+        workValues.Add(-1.0f);
+        workValues.Add(+10.0f);
+        workValues.Add(+20.0f);
+
+        actionModifierDictionary.Add("sleep", sleepValues);
+        actionModifierDictionary.Add("eat", eatValues);
+        actionModifierDictionary.Add("eatexpensive", eatExpensiveValues);
+        actionModifierDictionary.Add("eatcheap", eatCheapValues);
+        actionModifierDictionary.Add("work", workValues);
+    }
+
+    // @TODO could automatically add state parameters?
+    void ConstructStateVector()
+    {
+        stateVector.Add(energy);
+        stateVector.Add(hunger);
+        stateVector.Add(money);
+    }
+
+    #endregion
+
 
 
 
