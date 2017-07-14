@@ -8,7 +8,7 @@ public class Character : MonoBehaviour
     
     //agent
     Agent agent;
-    public AgentStateVarFloat energy, hunger, money;
+    public AgentStateVarFloat energy, hunger, wealth, mood, temper, sociability, soberness;
     public TextMesh voice, stats;
 
     List<AgentStateVarFloat> stateVector = new List<AgentStateVarFloat>();
@@ -31,11 +31,20 @@ public class Character : MonoBehaviour
         ConstructActionModifierDictionary();
 
         //add function delegate to action
-        agent.SetVoidActionDelegate("Sleep", Sleep);
-        agent.SetVoidActionDelegate("Work", Work);
-        agent.SetVoidActionDelegate("Eat", Eat);
-        agent.SetVoidActionDelegate("EatExpensive", EatExpensive);
-        agent.SetVoidActionDelegate("EatCheap", EatCheap);
+        //agent.SetVoidActionDelegate("Sleep", Sleep);
+        //agent.SetVoidActionDelegate("Work", Work);
+        //agent.SetVoidActionDelegate("Eat", Eat);
+        //agent.SetVoidActionDelegate("EatExpensive", EatExpensive);
+        //agent.SetVoidActionDelegate("EatCheap", EatCheap);
+        agent.SetVoidActionDelegate("BuyFoodAtMarket", BuyFoodAtMarket);
+        agent.SetVoidActionDelegate("EatFoodAtHome", EatFoodAtHome);
+        agent.SetVoidActionDelegate("StealFood", StealFood);
+        agent.SetVoidActionDelegate("SleepAtHome", SleepAtHome);
+        agent.SetVoidActionDelegate("SleepOnTheSpot", SleepOnTheSpot);
+        agent.SetVoidActionDelegate("DrinkAtTavern", DrinkAtTavern);
+        agent.SetVoidActionDelegate("PrayAtChurch", PrayAtChurch);
+        agent.SetVoidActionDelegate("GoFishing", GoFishing);
+        agent.SetVoidActionDelegate("Blacksmithing", Blacksmithing);
 
         Walker = GetComponent<NavMeshAgent>();
     }
@@ -51,7 +60,7 @@ public class Character : MonoBehaviour
         Walker.SetDestination(target.position);
 
         // Show some stuff to UI
-        DisplayStats("energy: " + energy.value.ToString("F0")  + " hunger: " + hunger.value.ToString("F0") + " money: " + money.value.ToString("F0"));
+        DisplayStats("energy: " + energy.value.ToString("F0")  + " hunger: " + hunger.value.ToString("F0") + " wealth: " + wealth.value.ToString("F0") + "mood: " + mood.value.ToString("F0") + " temper: " + temper.value.ToString("F0") + " sociability: " + sociability.value.ToString("F0") + " soberness: " + soberness.value.ToString("F0"));
     }
 
 
@@ -79,41 +88,106 @@ public class Character : MonoBehaviour
 
     #region PERFORMING ACTIONS
 
-    void Sleep()
-    { 
-        PerformAction("sleep");
+    //void Sleep()
+    //{ 
+    //    PerformAction("sleep");
 
-        Speak("Sleeping");
+    //    Speak("Sleeping");
+    //}
+
+    //void Eat()
+    //{
+    //    PerformAction("eat");
+
+    //    Speak("Eating");
+
+    //    //Evaluate children + execute them
+    //}
+
+    //void EatExpensive()
+    //{
+    //    PerformAction("eatexpensive");
+
+    //    Speak("Eating Expensive Food");
+    //}
+
+    //void EatCheap()
+    //{
+    //    PerformAction("eatcheap");
+
+    //    Speak("Eating Cheap Food");
+    //}
+
+    //void Work()
+    //{
+    //    PerformAction("work");
+
+    //    Speak("Working");
+    //}
+
+    void BuyFoodAtMarket()
+    {
+        PerformAction("buyfoodatmarket");
+
+        Speak("Buying Food At Market");
     }
 
-    void Eat()
+    void EatFoodAtHome()
     {
-        PerformAction("eat");
+        PerformAction("eatfoodathome");
 
-        Speak("Eating");
-
-        //Evaluate children + execute them
+        Speak("Eating food at home");
     }
 
-    void EatExpensive()
+    void StealFood()
     {
-        PerformAction("eatexpensive");
+        PerformAction("stealfood");
 
-        Speak("Eating Expensive Food");
+        Speak("Stealing Food");
     }
 
-    void EatCheap()
+    void SleepAtHome()
     {
-        PerformAction("eatcheap");
+        //Debug.Log("sleep");
+    
+        PerformAction("sleepathome");
 
-        Speak("Eating Cheap Food");
+        Speak("Sleeping at home");
     }
 
-    void Work()
+    void SleepOnTheSpot()
     {
-        PerformAction("work");
+        PerformAction("sleeponthespot");
 
-        Speak("Working");
+        Speak("Sleeping on the spot");
+    }
+
+    void DrinkAtTavern()
+    {
+        PerformAction("drinkattavern");
+
+        Speak("Drinking at the tavern");
+    }
+
+    void PrayAtChurch()
+    {
+        PerformAction("prayatchurch");
+
+        Speak("Praying at the church");
+    }
+
+    void GoFishing()
+    {
+        PerformAction("gofishing");
+
+        Speak("Going Fishing");
+    }
+
+    void Blacksmithing()
+    {
+        PerformAction("blacksmithing");
+
+        Speak("Blacksmithing");
     }
 
     void PerformAction(string action)
@@ -148,51 +222,144 @@ public class Character : MonoBehaviour
     {
         /*
             State variables:
-            Energy
             Hunger
-            Money
+            Energy
+            Wealth
+            Mood
+            Temper
+            Sociability
+            Soberness
         */
 
         //This is temporary, creates the modification vectors for every action in the game
         //Important to ensure that the list of state parameters is in the same order as the modification vectors in the dictionary
-        List<float> sleepValues = new List<float>();
-        sleepValues.Add(+10.0f);
-        sleepValues.Add(+5.0f);
-        sleepValues.Add(+0.0f); // the money option in particular could be different, how could the agent's personality specify how much money they spend?
 
-        List<float> eatValues = new List<float>();
-        eatValues.Add(+4.0f);
-        eatValues.Add(-10.0f);
-        eatValues.Add(-5.0f);
+        // the money option in particular could be different, how could the agent's personality specify how much money they spend?
 
-        List<float> eatExpensiveValues = new List<float>();
-        eatExpensiveValues.Add(+2.0f);
-        eatExpensiveValues.Add(-8.0f);
-        eatExpensiveValues.Add(-10.0f);
+        List<float> buyfoodatmarketValues = new List<float>();
+        buyfoodatmarketValues.Add(-5.0f);
+        buyfoodatmarketValues.Add(-1.0f);
+        buyfoodatmarketValues.Add(-5.0f);
+        buyfoodatmarketValues.Add(+2.0f);
+        buyfoodatmarketValues.Add(+0.0f);
+        buyfoodatmarketValues.Add(-1.0f);
+        buyfoodatmarketValues.Add(+0.0f);
+        List<float> eatfoodathomeValues = new List<float>();
+        eatfoodathomeValues.Add(-5.0f);
+        eatfoodathomeValues.Add(-1.0f);
+        eatfoodathomeValues.Add(-1.0f);
+        eatfoodathomeValues.Add(0.0f);
+        eatfoodathomeValues.Add(+0.0f);
+        eatfoodathomeValues.Add(+2.0f);
+        eatfoodathomeValues.Add(+0.0f);
+        List<float> stealfoodValues = new List<float>();
+        stealfoodValues.Add(-2.0f);
+        stealfoodValues.Add(-3.0f);
+        stealfoodValues.Add(+0.0f);
+        stealfoodValues.Add(-1.0f);
+        stealfoodValues.Add(+0.0f);
+        stealfoodValues.Add(+0.0f);
+        stealfoodValues.Add(+0.0f);
+        List<float> gofishingValues = new List<float>();
+        gofishingValues.Add(-3.0f);
+        gofishingValues.Add(+0.0f);
+        gofishingValues.Add(+2.0f);
+        gofishingValues.Add(+5.0f);
+        gofishingValues.Add(+5.0f);
+        gofishingValues.Add(+3.0f);
+        gofishingValues.Add(+0.0f);
+        List<float> sleepathomeValues = new List<float>();
+        sleepathomeValues.Add(+5.0f);
+        sleepathomeValues.Add(+10.0f);
+        sleepathomeValues.Add(+0.0f);
+        sleepathomeValues.Add(+3.0f);
+        sleepathomeValues.Add(+3.0f);
+        sleepathomeValues.Add(+1.0f);
+        sleepathomeValues.Add(+2.0f);
+        List<float> sleeponthespotValues = new List<float>();
+        sleeponthespotValues.Add(+7.0f);
+        sleeponthespotValues.Add(+5.0f);
+        sleeponthespotValues.Add(+0.0f);
+        sleeponthespotValues.Add(-3.0f);
+        sleeponthespotValues.Add(-3.0f);
+        sleeponthespotValues.Add(+0.0f);
+        sleeponthespotValues.Add(+2.0f);
+        List<float> drinkattavernValues = new List<float>();
+        drinkattavernValues.Add(+1.0f);
+        drinkattavernValues.Add(-4.0f);
+        drinkattavernValues.Add(-4.0f);
+        drinkattavernValues.Add(+5.0f);
+        drinkattavernValues.Add(-2.0f);
+        drinkattavernValues.Add(-5.0f);
+        drinkattavernValues.Add(-10.0f);
+        List<float> prayatchurchValues = new List<float>();
+        prayatchurchValues.Add(+3.0f);
+        prayatchurchValues.Add(-4.0f);
+        prayatchurchValues.Add(-2.0f);
+        prayatchurchValues.Add(+5.0f);
+        prayatchurchValues.Add(+5.0f);
+        prayatchurchValues.Add(-2.0f);
+        prayatchurchValues.Add(+5.0f);
+        List<float> blacksmithingValues = new List<float>();
+        blacksmithingValues.Add(+3.0f);
+        blacksmithingValues.Add(-5.0f);
+        blacksmithingValues.Add(+5.0f);
+        blacksmithingValues.Add(+1.0f);
+        blacksmithingValues.Add(-1.0f);
+        blacksmithingValues.Add(+2.0f);
+        blacksmithingValues.Add(+0.0f);
+        //List<float> sleepValues = new List<float>();
+        //sleepValues.Add(+10.0f);
+        //sleepValues.Add(+5.0f);
+        //sleepValues.Add(+0.0f); 
 
-        List<float> eatCheapValues = new List<float>();
-        eatCheapValues.Add(+2.0f);
-        eatCheapValues.Add(-8.0f);
-        eatCheapValues.Add(-5.0f);
+        //List<float> eatValues = new List<float>();
+        //eatValues.Add(+4.0f);
+        //eatValues.Add(-10.0f);
+        //eatValues.Add(-5.0f);
 
-        List<float> workValues = new List<float>();
-        workValues.Add(-1.0f);
-        workValues.Add(+10.0f);
-        workValues.Add(+20.0f);
+        //List<float> eatExpensiveValues = new List<float>();
+        //eatExpensiveValues.Add(+2.0f);
+        //eatExpensiveValues.Add(-8.0f);
+        //eatExpensiveValues.Add(-10.0f);
 
-        actionModifierDictionary.Add("sleep", sleepValues);
-        actionModifierDictionary.Add("eat", eatValues);
-        actionModifierDictionary.Add("eatexpensive", eatExpensiveValues);
-        actionModifierDictionary.Add("eatcheap", eatCheapValues);
-        actionModifierDictionary.Add("work", workValues);
+        //List<float> eatCheapValues = new List<float>();
+        //eatCheapValues.Add(+2.0f);
+        //eatCheapValues.Add(-8.0f);
+        //eatCheapValues.Add(-5.0f);
+
+        //List<float> workValues = new List<float>();
+        //workValues.Add(-1.0f);
+        //workValues.Add(+10.0f);
+        //workValues.Add(+20.0f);
+
+        //actionModifierDictionary.Add("sleep", sleepValues);
+        //actionModifierDictionary.Add("eat", eatValues);
+        //actionModifierDictionary.Add("eatexpensive", eatExpensiveValues);
+        //actionModifierDictionary.Add("eatcheap", eatCheapValues);
+        //actionModifierDictionary.Add("work", workValues);
+
+        actionModifierDictionary.Add("buyfoodatmarket", buyfoodatmarketValues);
+        actionModifierDictionary.Add("eatfoodathome", eatfoodathomeValues);
+        actionModifierDictionary.Add("stealfood", stealfoodValues);
+        actionModifierDictionary.Add("gofishing", gofishingValues);
+        actionModifierDictionary.Add("sleepathome", sleepathomeValues);
+        actionModifierDictionary.Add("sleeponthespot", sleeponthespotValues);
+        actionModifierDictionary.Add("drinkattavern", drinkattavernValues);
+        actionModifierDictionary.Add("prayatchurch", prayatchurchValues);
+        actionModifierDictionary.Add("blacksmithing", blacksmithingValues);
     }
 
     // @TODO could automatically add state parameters?
     void ConstructStateVector()
     {
-        stateVector.Add(energy);
         stateVector.Add(hunger);
-        stateVector.Add(money);
+        stateVector.Add(energy);
+        stateVector.Add(wealth);
+        stateVector.Add(mood);
+        stateVector.Add(temper);
+        stateVector.Add(sociability);
+        stateVector.Add(soberness);
     }
 
     #endregion

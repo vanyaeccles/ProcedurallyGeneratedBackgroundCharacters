@@ -8,8 +8,8 @@ public class AgentStateParameter : MonoBehaviour
 
     protected float normValue;
 
-    public bool isModifiable;
-    public bool randomizeStartValue;
+    //public bool isModifiable;
+    //public bool randomizeStartValue;
 
 
 

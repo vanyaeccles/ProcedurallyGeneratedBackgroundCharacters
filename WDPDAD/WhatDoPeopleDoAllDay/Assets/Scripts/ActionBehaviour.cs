@@ -118,8 +118,7 @@ public class ActionBehaviour : MonoBehaviour
         { // action ended
 
             if(isConsoleLogging)
-                Debug.Log(name + " action ended");
-
+                Debug.Log(GetTopAction().name + " action ended");
 
             topAction = null;
 
@@ -151,7 +150,14 @@ public class ActionBehaviour : MonoBehaviour
         {
             if (linkedChildActions[i].isActionEnabled == true)
             {
+                
+
+
                 linkedChildActions[i].action.EvaluateActionUtil();
+
+                if (isConsoleLogging)
+                    Debug.Log("Evaluating " + linkedChildActions[i].action.GetName() + " Score: " + linkedChildActions[i].action.GetActionScore());
+
                 if (linkedChildActions[i].action.GetActionScore() > topActionScore)
                 {
                     topAction = linkedChildActions[i].action;
@@ -191,6 +197,10 @@ public class ActionBehaviour : MonoBehaviour
         return topAction;
     }
 
+    public string GetName()
+    {
+        return name;
+    }
 
     public void DisableAction(string actionName)
     {
@@ -231,9 +241,11 @@ public class ActionBehaviour : MonoBehaviour
         // if there are no considerations then just pick the action and execute
         if (considerations.Count == 0)
         {
+            Debug.Log("No considerations");
             actionUtilScore = 1.0f;
             return;
         }
+
         //else evaluate appropriate considerations 
         for (int i = 0; i < considerations.Count; i++)
         {
@@ -269,27 +281,32 @@ public class ActionBehaviour : MonoBehaviour
 
     public void ExecuteBehaviour()
     {
+        //Debug.Log("Executing: " + name);
 
         //Each action could have a destination or a set of animations
 
         // Could also have an effect on the agent's state parameters, see Character script
 
 
-        //Debug.Log("Going to " + name + " location");
-
         if (isLeafAction)
             return;
 
-        
 
         if (GetTopAction().isLeafAction)
             owner.SetTarget(GetTopAction().location);
 
         if(isConsoleLogging)
-            Debug.Log("Distance: " + Vector3.Distance(transform.position, GetTopAction().location.position));
+        {
+            //Debug.Log("Current position: " + transform.position);
+            //Debug.Log("Target: " + GetTopAction().name);
+            //Debug.Log("Target position: " + GetTopAction().location.transform.position);
+            //Debug.Log("Distance: " + Vector3.Distance(owner.transform.position, GetTopAction().location.transform.position));
+        }
+
 
         //checks position + begins performing action
-        if (Vector3.Distance(transform.position, GetTopAction().location.position) <= Distance2DestinationThresh)
+        float distance2target = Vector3.Distance(owner.transform.position, GetTopAction().location.transform.position);
+        if (distance2target <= Distance2DestinationThresh)
         {
             Debug.Log("Performing action " + GetTopAction().name);
 

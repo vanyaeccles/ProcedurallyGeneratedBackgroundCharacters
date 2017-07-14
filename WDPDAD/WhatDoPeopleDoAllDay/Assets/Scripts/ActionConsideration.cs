@@ -7,7 +7,7 @@ public class ActionConsideration
     public AnimationCurve utilityCurve;
     public bool enabled = true;
 
-    // provided as text by the designer, will be linked (based on name) to agent state parameter
+    // provided as text by the designer, will be linked (based on name) to agent state parameter @TODO
     public string ConsiderationParameter;
     public AgentStateParameter agentStatePar;
 
@@ -23,6 +23,7 @@ public class ActionConsideration
     public void Awake()
     {
         weight = 1.0f;
+
     }
 
 

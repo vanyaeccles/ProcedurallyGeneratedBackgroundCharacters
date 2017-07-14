@@ -12,8 +12,8 @@ public class AgentStateVarFloat : AgentStateParameter
     public float minValue = 0.0f;
     public float maxValue = 100.0f;
     public float startValue = 50.0f;
-    public float ChangePerSec = 0.0f;
-    private float currentValue;
+    //public float ChangePerSec = 0.0f;
+    public float currentValue;
 
     void Start()
     {
