@@ -87,7 +87,7 @@ public class ActionBehaviour : MonoBehaviour
         if (topAction == null)
         {   // evaluate + choose a child action
             EvaluateChildActions();
-            actionTimer = GetTopAction().time;
+            actionTimer = TopAction.time;
         }
         else
         {
@@ -118,7 +118,7 @@ public class ActionBehaviour : MonoBehaviour
         { // action ended
 
             if(isConsoleLogging)
-                Debug.Log(GetTopAction().name + " action ended");
+                Debug.Log(TopAction.name + " action ended");
 
             topAction = null;
 
@@ -126,7 +126,7 @@ public class ActionBehaviour : MonoBehaviour
 
             EvaluateChildActions();
 
-            actionTimer = GetTopAction().time;
+            actionTimer = TopAction.time;
         }
     }
 
@@ -151,8 +151,6 @@ public class ActionBehaviour : MonoBehaviour
             if (linkedChildActions[i].isActionEnabled == true)
             {
                 
-
-
                 linkedChildActions[i].action.EvaluateActionUtil();
 
                 if (isConsoleLogging)
@@ -170,7 +168,7 @@ public class ActionBehaviour : MonoBehaviour
         if (topAction != previousAction)
             newAction = true;
         else
-            StartTimer();
+            //StartTimer();
 
         
 
@@ -192,9 +190,24 @@ public class ActionBehaviour : MonoBehaviour
         isTiming = false;
     }
 
-    public ActionBehaviour GetTopAction()
+    public void ResetTimer()
     {
-        return topAction;
+        actionTimer = TopAction.time;
+    }
+
+    public ActionBehaviour TopAction
+    {
+        get
+        {
+            return topAction;
+        }
+
+        set
+        {
+            previousAction = topAction;
+            topAction = value;
+        }
+        
     }
 
     public string GetName()
@@ -215,17 +228,6 @@ public class ActionBehaviour : MonoBehaviour
     }
 
 
-    //IEnumerator CooldownAction(int i)
-    //{
-    //    while (linkedChildActions[i].cooldown >= linkedChildActions[i].cooldownTimer)
-    //    {
-    //        linkedChildActions[i].cooldownTimer += UtilityTime.time;
-    //        yield return new WaitForEndOfFrame();
-    //    }
-    //    linkedChildActions[i].isActionEnabled = true;
-    //    linkedChildActions[i].cooldownTimer = 0.0f;
-    //}
-
 
 
 
@@ -241,7 +243,7 @@ public class ActionBehaviour : MonoBehaviour
         // if there are no considerations then just pick the action and execute
         if (considerations.Count == 0)
         {
-            Debug.Log("No considerations");
+            //Debug.Log("No considerations");
             actionUtilScore = 1.0f;
             return;
         }
@@ -270,6 +272,7 @@ public class ActionBehaviour : MonoBehaviour
         actionUtilScore = val;
     }
 
+
     #endregion
 
 
@@ -292,8 +295,8 @@ public class ActionBehaviour : MonoBehaviour
             return;
 
 
-        if (GetTopAction().isLeafAction)
-            owner.SetTarget(GetTopAction().location);
+        if (TopAction.isLeafAction)
+            owner.SetTarget(TopAction.location);
 
         if(isConsoleLogging)
         {
@@ -305,19 +308,19 @@ public class ActionBehaviour : MonoBehaviour
 
 
         //checks position + begins performing action
-        float distance2target = Vector3.Distance(owner.transform.position, GetTopAction().location.transform.position);
+        float distance2target = Vector3.Distance(owner.transform.position, TopAction.location.transform.position);
         if (distance2target <= Distance2DestinationThresh)
         {
-            Debug.Log("Performing action " + GetTopAction().name);
+            //Debug.Log("Performing action " + GetTopAction().name);
 
 
             StartTimer();
 
             //Performs the action as specified in Character.cs, updates the agent parameters etc as specified
-            if (GetTopAction().isLeafAction)
+            if (TopAction.isLeafAction)
             {
-                GetTopAction().handle();
-                GetTopAction().ExecuteBehaviour();
+                TopAction.handle();
+                TopAction.ExecuteBehaviour();
             }   
         }
     }

@@ -8,14 +8,25 @@ public class Character : MonoBehaviour
     
     //agent
     Agent agent;
-    public AgentStateVarFloat energy, hunger, wealth, mood, temper, sociability, soberness;
     public TextMesh voice, stats;
 
-    List<AgentStateVarFloat> stateVector = new List<AgentStateVarFloat>();
 
+    [Header("State Parameters")]
+    public AgentStateVarFloat energy;
+    public AgentStateVarFloat hunger, wealth, mood, temper, sociability, soberness;
+    [Space(20)]
+
+    [Header("Relationships")]
+    public AgentStateVarFloat Agent1;
+    [Space(20)]
+
+    
+
+    List<AgentStateVarFloat> stateVector = new List<AgentStateVarFloat>();
     Dictionary<string, List<float>> actionModifierDictionary = new Dictionary<string, List<float>>();
 
-
+    // Prob dont need
+    //Dictionary<string, float> relationshipDictionary = new Dictionary<string, float>();
 
     // Simple Movement
     NavMeshAgent Walker;
@@ -26,16 +37,18 @@ public class Character : MonoBehaviour
     void Start()
     {
         agent = GetComponent<Agent>();
+        Walker = GetComponent<NavMeshAgent>();
+
 
         ConstructStateVector();
         ConstructActionModifierDictionary();
 
+
+
+
+
+
         //add function delegate to action
-        //agent.SetVoidActionDelegate("Sleep", Sleep);
-        //agent.SetVoidActionDelegate("Work", Work);
-        //agent.SetVoidActionDelegate("Eat", Eat);
-        //agent.SetVoidActionDelegate("EatExpensive", EatExpensive);
-        //agent.SetVoidActionDelegate("EatCheap", EatCheap);
         agent.SetVoidActionDelegate("BuyFoodAtMarket", BuyFoodAtMarket);
         agent.SetVoidActionDelegate("EatFoodAtHome", EatFoodAtHome);
         agent.SetVoidActionDelegate("StealFood", StealFood);
@@ -45,8 +58,14 @@ public class Character : MonoBehaviour
         agent.SetVoidActionDelegate("PrayAtChurch", PrayAtChurch);
         agent.SetVoidActionDelegate("GoFishing", GoFishing);
         agent.SetVoidActionDelegate("Blacksmithing", Blacksmithing);
+        agent.SetVoidActionDelegate("WorkDiligently", WorkDiligently);
+        agent.SetVoidActionDelegate("SleepOnTheJob", SleepOnTheJob);
+        agent.SetVoidActionDelegate("SellWares", SellWares);
 
-        Walker = GetComponent<NavMeshAgent>();
+        agent.SetVoidActionDelegate("Socialise", Socialise);
+
+
+        
     }
 
 
@@ -65,10 +84,7 @@ public class Character : MonoBehaviour
 
 
 
-    public void Interrupt()
-    {
-
-    }
+    
 
 
 
@@ -190,6 +206,36 @@ public class Character : MonoBehaviour
         Speak("Blacksmithing");
     }
 
+    void SleepOnTheJob()
+    {
+        PerformAction("sleeponthejob");
+
+        Speak("Sleeping on the job");
+    }
+
+    void WorkDiligently()
+    {
+        PerformAction("workdiligently");
+
+        Speak("WorkDiligently");
+    }
+
+    void SellWares()
+    {
+        PerformAction("sellwares");
+
+        Speak("Selling Wares");
+    }
+
+    void Socialise()
+    {
+        PerformAction("socialise");
+
+        Speak("Socialising");
+    }
+
+
+
     void PerformAction(string action)
     {
         //get the action, get the modification vector which will be stored by the agent (ie sign of effect and magnitude for all state variables)
@@ -308,36 +354,38 @@ public class Character : MonoBehaviour
         blacksmithingValues.Add(-1.0f);
         blacksmithingValues.Add(+2.0f);
         blacksmithingValues.Add(+0.0f);
-        //List<float> sleepValues = new List<float>();
-        //sleepValues.Add(+10.0f);
-        //sleepValues.Add(+5.0f);
-        //sleepValues.Add(+0.0f); 
-
-        //List<float> eatValues = new List<float>();
-        //eatValues.Add(+4.0f);
-        //eatValues.Add(-10.0f);
-        //eatValues.Add(-5.0f);
-
-        //List<float> eatExpensiveValues = new List<float>();
-        //eatExpensiveValues.Add(+2.0f);
-        //eatExpensiveValues.Add(-8.0f);
-        //eatExpensiveValues.Add(-10.0f);
-
-        //List<float> eatCheapValues = new List<float>();
-        //eatCheapValues.Add(+2.0f);
-        //eatCheapValues.Add(-8.0f);
-        //eatCheapValues.Add(-5.0f);
-
-        //List<float> workValues = new List<float>();
-        //workValues.Add(-1.0f);
-        //workValues.Add(+10.0f);
-        //workValues.Add(+20.0f);
-
-        //actionModifierDictionary.Add("sleep", sleepValues);
-        //actionModifierDictionary.Add("eat", eatValues);
-        //actionModifierDictionary.Add("eatexpensive", eatExpensiveValues);
-        //actionModifierDictionary.Add("eatcheap", eatCheapValues);
-        //actionModifierDictionary.Add("work", workValues);
+        List<float> workdiligentlyValues = new List<float>();
+        workdiligentlyValues.Add(+3.0f);
+        workdiligentlyValues.Add(-5.0f);
+        workdiligentlyValues.Add(+3.0f);
+        workdiligentlyValues.Add(+1.0f);
+        workdiligentlyValues.Add(-1.0f);
+        workdiligentlyValues.Add(+2.0f);
+        workdiligentlyValues.Add(+0.0f);
+        List<float> sleeponthejobValues = new List<float>();
+        sleeponthejobValues.Add(+2.0f);
+        sleeponthejobValues.Add(+5.0f);
+        sleeponthejobValues.Add(+0.0f);
+        sleeponthejobValues.Add(+1.0f);
+        sleeponthejobValues.Add(-1.0f);
+        sleeponthejobValues.Add(+2.0f);
+        sleeponthejobValues.Add(+0.0f);
+        List<float> sellwaresValues = new List<float>();
+        sellwaresValues.Add(+3.0f);
+        sellwaresValues.Add(-5.0f);
+        sellwaresValues.Add(+5.0f);
+        sellwaresValues.Add(+1.0f);
+        sellwaresValues.Add(-1.0f);
+        sellwaresValues.Add(+2.0f);
+        sellwaresValues.Add(+0.0f);
+        List<float> socialiseValues = new List<float>();
+        socialiseValues.Add(+3.0f);
+        socialiseValues.Add(-5.0f);
+        socialiseValues.Add(+5.0f);
+        socialiseValues.Add(+1.0f);
+        socialiseValues.Add(-1.0f);
+        socialiseValues.Add(+2.0f);
+        socialiseValues.Add(+0.0f);
 
         actionModifierDictionary.Add("buyfoodatmarket", buyfoodatmarketValues);
         actionModifierDictionary.Add("eatfoodathome", eatfoodathomeValues);
@@ -348,6 +396,10 @@ public class Character : MonoBehaviour
         actionModifierDictionary.Add("drinkattavern", drinkattavernValues);
         actionModifierDictionary.Add("prayatchurch", prayatchurchValues);
         actionModifierDictionary.Add("blacksmithing", blacksmithingValues);
+        actionModifierDictionary.Add("workdiligently", workdiligentlyValues);
+        actionModifierDictionary.Add("sellwares", sellwaresValues);
+        actionModifierDictionary.Add("sleeponthejob", sleeponthejobValues);
+        actionModifierDictionary.Add("socialise", socialiseValues);
     }
 
     // @TODO could automatically add state parameters?
@@ -388,6 +440,7 @@ public class Character : MonoBehaviour
 
         return modifier;
     }
+
 
 
 }

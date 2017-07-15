@@ -12,6 +12,7 @@ public class Agent : MonoBehaviour
     
     public LinkedActionBehaviour linkedRootAction = new LinkedActionBehaviour();
 
+    public LinkedActionBehaviour socialInteruption = new LinkedActionBehaviour();
 
 
 
@@ -21,6 +22,41 @@ public class Agent : MonoBehaviour
         linkedRootAction.action.UpdateAction();
     }
 
+
+
+    public void Interrupt(string origin, bool social, bool assist)
+    {
+        //Debug.Log("Interuption recieved");
+
+        //Debug.Log("Interuption from: " + origin + " of type " + social + " or " + assist);
+
+
+        if (social)
+        {
+
+
+            socialInteruption.action.EvaluateActionUtil();
+
+            //Debug.Log(socialInteruption.action.GetActionScore());
+
+            if (socialInteruption.action.GetActionScore() >= 0.0f)
+            {
+                // pause action hierarchy, store original topaction
+
+                //Debug.Log("Social interaction initiated");
+
+                linkedRootAction.action.TopAction = null;
+
+                // set the new top action
+                linkedRootAction.action.TopAction = socialInteruption.action;
+                linkedRootAction.action.ResetTimer();
+
+            }
+        }
+            
+
+
+    }
 
 
 
