@@ -31,7 +31,7 @@ public class Character : MonoBehaviour
     // Simple Movement
     NavMeshAgent Walker;
     public Transform target;
-
+    public Animation anim;
 
 
     void Start()
@@ -75,14 +75,36 @@ public class Character : MonoBehaviour
         // Perform utility decision making and behaviour
         agent.UpdateAI();
 
-        //Update movement
-        Walker.SetDestination(target.position);
+        Move();
 
         // Show some stuff to UI
-        DisplayStats("energy: " + energy.value.ToString("F0")  + " hunger: " + hunger.value.ToString("F0") + " wealth: " + wealth.value.ToString("F0") + "mood: " + mood.value.ToString("F0") + " temper: " + temper.value.ToString("F0") + " sociability: " + sociability.value.ToString("F0") + " soberness: " + soberness.value.ToString("F0"));
+        DisplayStats(" energy: " + energy.value.ToString("F0") + "\n hunger: " + hunger.value.ToString("F0") + "\n wealth: " + wealth.value.ToString("F0") + "\n mood: " + mood.value.ToString("F0") + "\n temper: " + temper.value.ToString("F0") + "\n sociability: " + sociability.value.ToString("F0") + "\n soberness: " + soberness.value.ToString("F0"));
     }
 
 
+    void Move()
+    {
+        // scale animation speed with navmeshagent velocity
+
+
+        //Update movement
+        Walker.SetDestination(target.position);
+
+        
+
+        if (Vector3.Distance(transform.position, target.position) < 1.0f)
+        {
+            anim.Stop();
+            //anim.Play("run");
+        }
+        else
+        {
+            Speak("Walking to target");
+            anim.Play();
+        }
+            
+
+    }
 
     
 
@@ -217,7 +239,7 @@ public class Character : MonoBehaviour
     {
         PerformAction("workdiligently");
 
-        Speak("WorkDiligently");
+        Speak("Working diligently");
     }
 
     void SellWares()
