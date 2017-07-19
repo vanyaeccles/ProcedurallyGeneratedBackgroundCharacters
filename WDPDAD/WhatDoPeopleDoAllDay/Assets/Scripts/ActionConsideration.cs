@@ -16,15 +16,8 @@ public class ActionConsideration
     // owner is set by the action behaviour the consideration is assigned to
     public Character owner;
     // this will be a function of agent personality
-    public float weight;
+    private float weight;
     
-
-
-    public void Awake()
-    {
-        weight = 1.0f;
-
-    }
 
 
     public float propertyScore
@@ -43,10 +36,25 @@ public class ActionConsideration
             return utilityCurve.Evaluate(agentStatePar.normalizedValue);
         }
     }
+    
 
-
-    public void GetConsiderationWeight()
+    //retrieves the weight associated with the importance the agent assocates with that state variable
+    public float Weight
     {
+        get
+        {   
+            return weight;
+        }
+        set
+        {
+            weight = value;
+        }
+    }
 
+
+    public void SetWeight()
+    {
+        Weight = owner.personality.CheckWeight(ConsiderationParameter);
+        Debug.Log(Weight);
     }
 }

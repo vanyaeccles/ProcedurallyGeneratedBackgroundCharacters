@@ -9,29 +9,27 @@ public class Character : MonoBehaviour
     //agent
     Agent agent;
     public TextMesh voice, stats;
-
-
-    [Header("State Parameters")]
-    public AgentStateVarFloat energy;
-    public AgentStateVarFloat hunger, wealth, mood, temper, sociability, soberness;
-    [Space(20)]
-
-    [Header("Relationships")]
-    public AgentStateVarFloat Agent1;
-    [Space(20)]
-
-    
-
-    List<AgentStateVarFloat> stateVector = new List<AgentStateVarFloat>();
-    Dictionary<string, List<float>> actionModifierDictionary = new Dictionary<string, List<float>>();
-
-    // Prob dont need
-    //Dictionary<string, float> relationshipDictionary = new Dictionary<string, float>();
-
     // Simple Movement
     NavMeshAgent Walker;
     public Transform target;
     public Animation anim;
+
+
+
+
+    // The personality game object holds personality + state parameters
+    public Personality personality;
+    private AgentStateVarFloat energy, hunger, wealth, mood, temper, sociability, soberness;
+    // Vector that holds the agent's state
+    List<AgentStateVarFloat> stateVector = new List<AgentStateVarFloat>();
+
+    //relationships, modelled as state parameters
+    public AgentStateVarFloat Agent1;
+
+    // the dictionary thats used to execute effect of behaviours
+    Dictionary<string, List<float>> actionModifierDictionary = new Dictionary<string, List<float>>();
+
+    
 
 
     void Start()
@@ -42,11 +40,6 @@ public class Character : MonoBehaviour
 
         ConstructStateVector();
         ConstructActionModifierDictionary();
-
-
-
-
-
 
         //add function delegate to action
         agent.SetVoidActionDelegate("BuyFoodAtMarket", BuyFoodAtMarket);
@@ -78,7 +71,13 @@ public class Character : MonoBehaviour
         Move();
 
         // Show some stuff to UI
-        DisplayStats(" energy: " + energy.value.ToString("F0") + "\n hunger: " + hunger.value.ToString("F0") + "\n wealth: " + wealth.value.ToString("F0") + "\n mood: " + mood.value.ToString("F0") + "\n temper: " + temper.value.ToString("F0") + "\n sociability: " + sociability.value.ToString("F0") + "\n soberness: " + soberness.value.ToString("F0"));
+        DisplayStats(" energy: " + energy.value.ToString("F0")
+            + "\n hunger: " + hunger.value.ToString("F0")
+            + "\n wealth: " + wealth.value.ToString("F0") 
+            + "\n mood: " + mood.value.ToString("F0") 
+            + "\n temper: " + temper.value.ToString("F0") 
+            + "\n sociability: " + sociability.value.ToString("F0")
+            + "\n soberness: " + soberness.value.ToString("F0"));
     }
 
 
@@ -126,42 +125,6 @@ public class Character : MonoBehaviour
 
     #region PERFORMING ACTIONS
 
-    //void Sleep()
-    //{ 
-    //    PerformAction("sleep");
-
-    //    Speak("Sleeping");
-    //}
-
-    //void Eat()
-    //{
-    //    PerformAction("eat");
-
-    //    Speak("Eating");
-
-    //    //Evaluate children + execute them
-    //}
-
-    //void EatExpensive()
-    //{
-    //    PerformAction("eatexpensive");
-
-    //    Speak("Eating Expensive Food");
-    //}
-
-    //void EatCheap()
-    //{
-    //    PerformAction("eatcheap");
-
-    //    Speak("Eating Cheap Food");
-    //}
-
-    //void Work()
-    //{
-    //    PerformAction("work");
-
-    //    Speak("Working");
-    //}
 
     void BuyFoodAtMarket()
     {
@@ -427,6 +390,15 @@ public class Character : MonoBehaviour
     // @TODO could automatically add state parameters?
     void ConstructStateVector()
     {
+        hunger = personality.hunger;
+        energy = personality.energy;
+        wealth = personality.wealth;
+        mood = personality.mood;
+        temper = personality.temper;
+        sociability = personality.sociability;
+        soberness = personality.soberness;
+
+
         stateVector.Add(hunger);
         stateVector.Add(energy);
         stateVector.Add(wealth);

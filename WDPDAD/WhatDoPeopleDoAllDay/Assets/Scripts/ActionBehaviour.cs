@@ -46,21 +46,20 @@ public class ActionBehaviour : MonoBehaviour
 
 
     //Behaviour
-    private float Distance2DestinationThresh = 5.0f;
+    private float Distance2DestinationThresh = 3.0f;
     private Character owner;
     public Transform location;
-
-
 
 
     public void Awake()
     {
         owner = FindOwner(this.gameObject);
 
-        // Sets the owner for all considerations so they can set their weight vector 
+        // Sets the owner for all considerations so they can set their weight value
         for (int i = 0; i < considerations.Count; i++)
         {
             considerations[i].owner = this.owner;
+            considerations[i].SetWeight();
         }
     }
 
@@ -254,7 +253,7 @@ public class ActionBehaviour : MonoBehaviour
             //calc utility score if the consideration is enabled
             if (considerations[i].enabled)
             {
-                actionUtilScore += considerations[i].evaluateConsiderationUtil * considerations[i].weight;
+                actionUtilScore += considerations[i].evaluateConsiderationUtil * considerations[i].Weight;
                 enabledConsiderationsCount++;
             }
         }

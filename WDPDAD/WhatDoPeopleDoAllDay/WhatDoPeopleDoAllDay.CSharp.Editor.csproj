@@ -126,14 +126,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Models\Willage Cart (Central Asia)\Editor\CartWillageLoad.cs" />
+    <Compile Include="Assets\Prefabs\Models\Willage Cart (Central Asia)\Editor\CartWillageLoad.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Models\Mega Fantasy Props Pack\README.txt" />
-    <None Include="Assets\Models\Standard Assets\Water (Basic)\Sources\Shaders\FX-Water Simple.shader" />
-    <None Include="Assets\Models\Stykized Vegetation Pack Free\Readme.txt" />
-    <None Include="Assets\Models\Willage Cart (Central Asia)\ReadMe.txt" />
-    <None Include="Assets\Nature\Wispy Sky\ReadMe.txt" />
+    <None Include="Assets\Prefabs\Models\Mega Fantasy Props Pack\README.txt" />
+    <None Include="Assets\Prefabs\Models\Standard Assets\Water (Basic)\Sources\Shaders\FX-Water Simple.shader" />
+    <None Include="Assets\Prefabs\Models\Stykized Vegetation Pack Free\Readme.txt" />
+    <None Include="Assets\Prefabs\Models\Willage Cart (Central Asia)\ReadMe.txt" />
+    <None Include="Assets\Prefabs\Nature\Wispy Sky\ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

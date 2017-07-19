@@ -75,15 +75,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Character\rpg animations\scripts\CameraController.cs" />
-    <Compile Include="Assets\Character\rpg animations\scripts\HiderInTime.cs" />
-    <Compile Include="Assets\Character\rpg animations\scripts\HidingMachineBehaviour.cs" />
-    <Compile Include="Assets\Character\rpg animations\scripts\ScrollSwitcher.cs" />
-    <Compile Include="Assets\Character\rpg animations\scripts\UI_no_weapon.cs" />
-    <Compile Include="Assets\Character\rpg animations\scripts\UI_sword.cs" />
-    <Compile Include="Assets\Character\rpg animations\scripts\WeaponHide.cs" />
-    <Compile Include="Assets\Character\rpg animations\scripts\WorldInteraction.cs" />
-    <Compile Include="Assets\Models\Standard Assets\Water (Basic)\Scripts\WaterBasic.cs" />
+    <Compile Include="Assets\Prefabs\Character\rpg animations\scripts\CameraController.cs" />
+    <Compile Include="Assets\Prefabs\Character\rpg animations\scripts\HiderInTime.cs" />
+    <Compile Include="Assets\Prefabs\Character\rpg animations\scripts\HidingMachineBehaviour.cs" />
+    <Compile Include="Assets\Prefabs\Character\rpg animations\scripts\ScrollSwitcher.cs" />
+    <Compile Include="Assets\Prefabs\Character\rpg animations\scripts\UI_no_weapon.cs" />
+    <Compile Include="Assets\Prefabs\Character\rpg animations\scripts\UI_sword.cs" />
+    <Compile Include="Assets\Prefabs\Character\rpg animations\scripts\WeaponHide.cs" />
+    <Compile Include="Assets\Prefabs\Character\rpg animations\scripts\WorldInteraction.cs" />
+    <Compile Include="Assets\Prefabs\Models\Standard Assets\Water (Basic)\Scripts\WaterBasic.cs" />
     <Compile Include="Assets\Scripts\ActionBehaviour.cs" />
     <Compile Include="Assets\Scripts\ActionConsideration.cs" />
     <Compile Include="Assets\Scripts\Agent.cs" />
@@ -94,17 +94,18 @@
     <Compile Include="Assets\Scripts\Global\SunScript.cs" />
     <Compile Include="Assets\Scripts\Interruptions\Interrupt.cs" />
     <Compile Include="Assets\Scripts\LinkedActionBehaviour.cs" />
+    <Compile Include="Assets\Scripts\Personality.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
     <Compile Include="Assets\Scripts\SimpleAgent\AgentInfoBoard.cs" />
     <Compile Include="Assets\Scripts\SimpleAgent\NavAgent.cs" />
     <Compile Include="Assets\Scripts\UtilityTime.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Models\Mega Fantasy Props Pack\README.txt" />
-    <None Include="Assets\Models\Standard Assets\Water (Basic)\Sources\Shaders\FX-Water Simple.shader" />
-    <None Include="Assets\Models\Stykized Vegetation Pack Free\Readme.txt" />
-    <None Include="Assets\Models\Willage Cart (Central Asia)\ReadMe.txt" />
-    <None Include="Assets\Nature\Wispy Sky\ReadMe.txt" />
+    <None Include="Assets\Prefabs\Models\Mega Fantasy Props Pack\README.txt" />
+    <None Include="Assets\Prefabs\Models\Standard Assets\Water (Basic)\Sources\Shaders\FX-Water Simple.shader" />
+    <None Include="Assets\Prefabs\Models\Stykized Vegetation Pack Free\Readme.txt" />
+    <None Include="Assets\Prefabs\Models\Willage Cart (Central Asia)\ReadMe.txt" />
+    <None Include="Assets\Prefabs\Nature\Wispy Sky\ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
