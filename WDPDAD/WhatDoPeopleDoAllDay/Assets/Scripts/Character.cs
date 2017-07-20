@@ -19,7 +19,7 @@ public class Character : MonoBehaviour
 
     // The personality game object holds personality + state parameters
     public Personality personality;
-    private AgentStateVarFloat energy, hunger, wealth, mood, temper, sociability, soberness;
+    private AgentStateVarFloat energy, hunger, wealth, mood, temper, sociability, soberness, resources;
     // Vector that holds the agent's state
     List<AgentStateVarFloat> stateVector = new List<AgentStateVarFloat>();
 
@@ -73,6 +73,7 @@ public class Character : MonoBehaviour
         // Show some stuff to UI
         DisplayStats(" energy: " + energy.value.ToString("F0")
             + "\n hunger: " + hunger.value.ToString("F0")
+            + "\n resources: " + resources.value.ToString("F0")
             + "\n wealth: " + wealth.value.ToString("F0") 
             + "\n mood: " + mood.value.ToString("F0") 
             + "\n temper: " + temper.value.ToString("F0") 
@@ -149,8 +150,6 @@ public class Character : MonoBehaviour
 
     void SleepAtHome()
     {
-        //Debug.Log("sleep");
-    
         PerformAction("sleepathome");
 
         Speak("Sleeping at home");
@@ -260,6 +259,7 @@ public class Character : MonoBehaviour
             Temper
             Sociability
             Soberness
+            Resources
         */
 
         //This is temporary, creates the modification vectors for every action in the game
@@ -275,6 +275,7 @@ public class Character : MonoBehaviour
         buyfoodatmarketValues.Add(+0.0f);
         buyfoodatmarketValues.Add(-1.0f);
         buyfoodatmarketValues.Add(+0.0f);
+        buyfoodatmarketValues.Add(-5.0f);
         List<float> eatfoodathomeValues = new List<float>();
         eatfoodathomeValues.Add(-5.0f);
         eatfoodathomeValues.Add(-1.0f);
@@ -283,11 +284,13 @@ public class Character : MonoBehaviour
         eatfoodathomeValues.Add(+0.0f);
         eatfoodathomeValues.Add(+2.0f);
         eatfoodathomeValues.Add(+0.0f);
+        eatfoodathomeValues.Add(-1.0f);
         List<float> stealfoodValues = new List<float>();
         stealfoodValues.Add(-2.0f);
         stealfoodValues.Add(-3.0f);
         stealfoodValues.Add(+0.0f);
         stealfoodValues.Add(-1.0f);
+        stealfoodValues.Add(+0.0f);
         stealfoodValues.Add(+0.0f);
         stealfoodValues.Add(+0.0f);
         stealfoodValues.Add(+0.0f);
@@ -299,6 +302,7 @@ public class Character : MonoBehaviour
         gofishingValues.Add(+5.0f);
         gofishingValues.Add(+3.0f);
         gofishingValues.Add(+0.0f);
+        gofishingValues.Add(+2.0f);
         List<float> sleepathomeValues = new List<float>();
         sleepathomeValues.Add(+5.0f);
         sleepathomeValues.Add(+10.0f);
@@ -307,6 +311,7 @@ public class Character : MonoBehaviour
         sleepathomeValues.Add(+3.0f);
         sleepathomeValues.Add(+1.0f);
         sleepathomeValues.Add(+2.0f);
+        sleepathomeValues.Add(+0.0f);
         List<float> sleeponthespotValues = new List<float>();
         sleeponthespotValues.Add(+7.0f);
         sleeponthespotValues.Add(+5.0f);
@@ -315,6 +320,7 @@ public class Character : MonoBehaviour
         sleeponthespotValues.Add(-3.0f);
         sleeponthespotValues.Add(+0.0f);
         sleeponthespotValues.Add(+2.0f);
+        sleeponthespotValues.Add(+0.0f);
         List<float> drinkattavernValues = new List<float>();
         drinkattavernValues.Add(+1.0f);
         drinkattavernValues.Add(-4.0f);
@@ -323,6 +329,7 @@ public class Character : MonoBehaviour
         drinkattavernValues.Add(-2.0f);
         drinkattavernValues.Add(-5.0f);
         drinkattavernValues.Add(-10.0f);
+        drinkattavernValues.Add(-4.0f);
         List<float> prayatchurchValues = new List<float>();
         prayatchurchValues.Add(+3.0f);
         prayatchurchValues.Add(-4.0f);
@@ -331,6 +338,7 @@ public class Character : MonoBehaviour
         prayatchurchValues.Add(+5.0f);
         prayatchurchValues.Add(-2.0f);
         prayatchurchValues.Add(+5.0f);
+        prayatchurchValues.Add(-2.0f);
         List<float> blacksmithingValues = new List<float>();
         blacksmithingValues.Add(+3.0f);
         blacksmithingValues.Add(-5.0f);
@@ -339,6 +347,7 @@ public class Character : MonoBehaviour
         blacksmithingValues.Add(-1.0f);
         blacksmithingValues.Add(+2.0f);
         blacksmithingValues.Add(+0.0f);
+        blacksmithingValues.Add(+5.0f);
         List<float> workdiligentlyValues = new List<float>();
         workdiligentlyValues.Add(+3.0f);
         workdiligentlyValues.Add(-5.0f);
@@ -347,6 +356,7 @@ public class Character : MonoBehaviour
         workdiligentlyValues.Add(-1.0f);
         workdiligentlyValues.Add(+2.0f);
         workdiligentlyValues.Add(+0.0f);
+        workdiligentlyValues.Add(+3.0f);
         List<float> sleeponthejobValues = new List<float>();
         sleeponthejobValues.Add(+2.0f);
         sleeponthejobValues.Add(+5.0f);
@@ -354,6 +364,7 @@ public class Character : MonoBehaviour
         sleeponthejobValues.Add(+1.0f);
         sleeponthejobValues.Add(-1.0f);
         sleeponthejobValues.Add(+2.0f);
+        sleeponthejobValues.Add(+0.0f);
         sleeponthejobValues.Add(+0.0f);
         List<float> sellwaresValues = new List<float>();
         sellwaresValues.Add(+3.0f);
@@ -363,6 +374,7 @@ public class Character : MonoBehaviour
         sellwaresValues.Add(-1.0f);
         sellwaresValues.Add(+2.0f);
         sellwaresValues.Add(+0.0f);
+        sellwaresValues.Add(+5.0f);
         List<float> socialiseValues = new List<float>();
         socialiseValues.Add(+3.0f);
         socialiseValues.Add(-5.0f);
@@ -371,6 +383,7 @@ public class Character : MonoBehaviour
         socialiseValues.Add(-1.0f);
         socialiseValues.Add(+2.0f);
         socialiseValues.Add(+0.0f);
+        socialiseValues.Add(+5.0f);
 
         actionModifierDictionary.Add("buyfoodatmarket", buyfoodatmarketValues);
         actionModifierDictionary.Add("eatfoodathome", eatfoodathomeValues);
@@ -397,7 +410,7 @@ public class Character : MonoBehaviour
         temper = personality.temper;
         sociability = personality.sociability;
         soberness = personality.soberness;
-
+        resources = personality.resources;
 
         stateVector.Add(hunger);
         stateVector.Add(energy);
@@ -406,6 +419,7 @@ public class Character : MonoBehaviour
         stateVector.Add(temper);
         stateVector.Add(sociability);
         stateVector.Add(soberness);
+        stateVector.Add(resources);
     }
 
     #endregion

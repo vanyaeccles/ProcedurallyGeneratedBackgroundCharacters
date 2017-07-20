@@ -91,7 +91,6 @@
     <Compile Include="Assets\Scripts\AgentStateVarFloat.cs" />
     <Compile Include="Assets\Scripts\Character.cs" />
     <Compile Include="Assets\Scripts\Global\DayNightCycle.cs" />
-    <Compile Include="Assets\Scripts\Global\SunScript.cs" />
     <Compile Include="Assets\Scripts\Interruptions\Interrupt.cs" />
     <Compile Include="Assets\Scripts\LinkedActionBehaviour.cs" />
     <Compile Include="Assets\Scripts\Personality.cs" />

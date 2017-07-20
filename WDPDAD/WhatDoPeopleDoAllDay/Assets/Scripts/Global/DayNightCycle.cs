@@ -7,22 +7,32 @@ public class DayNightCycle : MonoBehaviour {
     public AgentStateVarFloat time;
 
     float timeOfDay = 12.0f;
-     
-    // Use this for initialization
-    void Start () {
-		
-	}
+
+    public float angle = 0.0f;
+
+    float hoursPerFrame = 0.0f;
+
+    float anglesPerHour = 15.0f;
+
 	
 	// Update is called once per frame
 	void Update ()
     {
-        //update time
-        timeOfDay += 0.3f * UtilityTime.time;
 
+        // Update the sun's rotation (geocentric)
+        hoursPerFrame = (0.3f * UtilityTime.time);
+
+        angle = hoursPerFrame * anglesPerHour;
+        transform.RotateAround(Vector3.zero, Vector3.forward, angle);
+
+
+
+
+        //update time with the per frame rate
+        timeOfDay += hoursPerFrame;
+        // a new day dawns
         if (timeOfDay >= 24.0f)
             timeOfDay = 0.0f;
-
-
 
         time.value = timeOfDay;
     }
