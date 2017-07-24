@@ -55,6 +55,6 @@ public class ActionConsideration
     public void SetWeight()
     {
         Weight = owner.personality.CheckWeight(ConsiderationParameter);
-        Debug.Log(Weight);
+        //Debug.Log(Weight);
     }
 }

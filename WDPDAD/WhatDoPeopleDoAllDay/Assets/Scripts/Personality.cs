@@ -12,7 +12,7 @@ public class Personality : MonoBehaviour {
     public float Concientiousness;
     public float Extroversion;
     public float Agreeableness;
-    public float Neuroticism;
+    public float NonNeuroticism;
 
 
     [Header("Agent State Parameters")]
@@ -27,12 +27,19 @@ public class Personality : MonoBehaviour {
 
 
 
-    // contains the influences that personlaity parameters have on state variable decisions
+    // maps from a state variable (as a string) to its integer index
+    private Dictionary<string, int> StateVarDictionary = new Dictionary<string, int>();
+
+    // contains the influences that personality parameters have on state variable decisions
     // ie how does extroversion level relate to importance of sociability, @TODO could replace this with a string tuple-value dictionary
     private float[,] personalityWeightInfluences = new float[5,10];
+
     // How the personality variables influence state variable modifiers (ie when performing an action)
     private float[,] personalityModifierInfluences = new float[5, 10];
-    private Dictionary<string, int> StateVarDictionary = new Dictionary<string, int>();
+
+    // the dictionary thats used to execute effect of behaviours
+    public Dictionary<string, List<float>> actionModifierDictionary = new Dictionary<string, List<float>>();
+
 
 
     void Awake()
@@ -40,6 +47,11 @@ public class Personality : MonoBehaviour {
         // the same weight influences for all agents
         BuildPersonalityWeightInfluences();
         BuildStateVarDictionary();
+
+        BuildPersonalityModifierInfluences();
+        BuildActionModifiers();
+
+        
 
         //Debug.Log(CheckWeight("timeofday"));
         //Debug.Log(CheckWeight("hunger"));
@@ -59,70 +71,301 @@ public class Personality : MonoBehaviour {
         personalityVector.Add(Concientiousness);
         personalityVector.Add(Extroversion);
         personalityVector.Add(Agreeableness);
-        personalityVector.Add(Neuroticism);
+        personalityVector.Add(NonNeuroticism);
     }
-	
 
 
+
+    #region Making Decision Weights
 
 
     public float CheckWeight(string stateVar)
     {
+        //gets the index from the state variable provided as a string
         int index = StateVarDictionary[stateVar];
 
-
         return GenerateWeight(index);
-        //return 1.0f;
     }
-
-
-
 
     float GenerateWeight(int index)
     {
         // returns a weight proportional to how much the agent cares about that state variable
         // ie low 'concientiousness' would translate to a disregard for 'time of day' as a relevant variable
 
+        // map from -1.0,1.0 to 0.0,1.0
+        float normO = NormaliseFloat(OpennessToExperience, 1.0f, -1.0f);
+        float normC = NormaliseFloat(Concientiousness, 1.0f, -1.0f);
+        float normE = NormaliseFloat(Extroversion, 1.0f, -1.0f);
+        float normA = NormaliseFloat(Agreeableness, 1.0f, -1.0f);
+        float normN = NormaliseFloat(NonNeuroticism, 1.0f, -1.0f);
+
+
+
         // @TODO add some pseudorandom noise - pcg
 
-        float oContrib = personalityWeightInfluences[0, index] * OpennessToExperience;
-        float cContrib = personalityWeightInfluences[1, index] * Concientiousness;
-        float eContrib = personalityWeightInfluences[2, index] * Extroversion;
-        float aContrib = personalityWeightInfluences[3, index] * Agreeableness;
-        float nContrib = personalityWeightInfluences[4, index] * Neuroticism;
+        float oContrib = personalityWeightInfluences[0, index] * normO;
+        float cContrib = personalityWeightInfluences[1, index] * normC;
+        float eContrib = personalityWeightInfluences[2, index] * normE;
+        float aContrib = personalityWeightInfluences[3, index] * normA;
+        float nContrib = personalityWeightInfluences[4, index] * normN;
 
 
         float weight = 1.0f + oContrib + cContrib + eContrib + aContrib + nContrib;
 
-
-
         return weight;
     }
 
-    float GenerateActionModifiers(int index)
+    float NormaliseFloat(float inputVal, float max, float min)
+    {
+        return (inputVal - min) / (max - min);
+    }
+
+    #endregion
+
+
+
+
+    #region Making Action Modifiers
+
+    // this builds the agents action modifier vectors and stores them in a dictionary
+    void BuildActionModifiers()
+    {
+        /*
+            State variables:
+            Hunger
+            Energy
+            Wealth
+            Mood
+            Temper
+            Sociability
+            Soberness
+            Resources
+        */
+
+        // NB Important to ensure that the list of state parameters is in the same order
+        // as the modification vectors in the dictionary
+
+        // get the agent specific modifiers 
+        float hungerModifier = GenerateActionModifiers(1);
+        float energyModifier = GenerateActionModifiers(2);
+        float wealthModifier = GenerateActionModifiers(3);
+        float moodModifier = GenerateActionModifiers(4);
+        float temperModifier = GenerateActionModifiers(5);
+        float sociabilityModifier = GenerateActionModifiers(6);
+        float sobernessModifier = GenerateActionModifiers(7);
+        float resourcesModifier = GenerateActionModifiers(8);
+
+
+        //Debug.Log("hunger" + hungerModifier);
+        //Debug.Log("energy" + energyModifier);
+        //Debug.Log("wealth" + wealthModifier);
+        //Debug.Log("mood" + moodModifier);
+
+        // Each action modifier is a combination of harcoded values that represent an action's effect on a variable
+        // this is combined with a specific modifier generated from the agent's personality
+
+        #region creating the action modifiers
+
+        List<float> buyfoodatmarketValues = new List<float>();
+        buyfoodatmarketValues.Add(-4.0f + hungerModifier);
+        buyfoodatmarketValues.Add(-1.0f + energyModifier);
+        buyfoodatmarketValues.Add(-3.0f + wealthModifier);
+        buyfoodatmarketValues.Add(+0.0f + moodModifier);
+        buyfoodatmarketValues.Add(+1.0f + temperModifier);
+        buyfoodatmarketValues.Add(-1.0f + sociabilityModifier);
+        buyfoodatmarketValues.Add(0.0f + sobernessModifier);
+        buyfoodatmarketValues.Add(0.0f + resourcesModifier);
+        List<float> eatfoodathomeValues = new List<float>();
+        eatfoodathomeValues.Add(-4.0f + hungerModifier);
+        eatfoodathomeValues.Add(-1.0f + energyModifier);
+        eatfoodathomeValues.Add(-2.0f + wealthModifier);
+        eatfoodathomeValues.Add(0.0f + moodModifier);
+        eatfoodathomeValues.Add(+1.0f + temperModifier);
+        eatfoodathomeValues.Add(3.0f + sociabilityModifier);
+        eatfoodathomeValues.Add(+0.0f + sobernessModifier);
+        eatfoodathomeValues.Add(-2.0f + resourcesModifier);
+        List<float> stealfoodValues = new List<float>();
+        stealfoodValues.Add(-2.0f + hungerModifier);
+        stealfoodValues.Add(-2.0f + energyModifier);
+        stealfoodValues.Add(+0.0f + wealthModifier);
+        stealfoodValues.Add(-1.0f + moodModifier);
+        stealfoodValues.Add(-1.0f + temperModifier);
+        stealfoodValues.Add(+0.0f + sociabilityModifier);
+        stealfoodValues.Add(+0.0f + sobernessModifier);
+        stealfoodValues.Add(+1.0f + resourcesModifier);
+        List<float> sleepathomeValues = new List<float>();
+        sleepathomeValues.Add(+1.0f + hungerModifier);
+        sleepathomeValues.Add(+3.0f + energyModifier);
+        sleepathomeValues.Add(+0.0f + wealthModifier);
+        sleepathomeValues.Add(1.0f + moodModifier);
+        sleepathomeValues.Add(+3.0f + temperModifier);
+        sleepathomeValues.Add(+2.0f + sociabilityModifier);
+        sleepathomeValues.Add(+4.0f + sobernessModifier);
+        sleepathomeValues.Add(+0.0f + resourcesModifier);
+        List<float> sleeponthespotValues = new List<float>();
+        sleeponthespotValues.Add(+1.0f + hungerModifier);
+        sleeponthespotValues.Add(+1.0f + energyModifier);
+        sleeponthespotValues.Add(+0.0f + wealthModifier);
+        sleeponthespotValues.Add(-1.0f + moodModifier);
+        sleeponthespotValues.Add(1.0f + temperModifier);
+        sleeponthespotValues.Add(+0.0f + sociabilityModifier);
+        sleeponthespotValues.Add(+4.0f + sobernessModifier);
+        sleeponthespotValues.Add(+0.0f + resourcesModifier);
+        List<float> drinkattavernValues = new List<float>();
+        drinkattavernValues.Add(+2.0f + hungerModifier);
+        drinkattavernValues.Add(-2.0f + energyModifier);
+        drinkattavernValues.Add(-2.0f + wealthModifier);
+        drinkattavernValues.Add(+1.0f + moodModifier);
+        drinkattavernValues.Add(0.0f + temperModifier);
+        drinkattavernValues.Add(-2.0f + sociabilityModifier);
+        drinkattavernValues.Add(-4.0f + sobernessModifier);
+        drinkattavernValues.Add(-0.0f + resourcesModifier);
+        List<float> drinkamicablyValues = new List<float>();
+        drinkamicablyValues.Add(+2.0f + hungerModifier);
+        drinkamicablyValues.Add(-2.0f + energyModifier);
+        drinkamicablyValues.Add(-2.0f + wealthModifier);
+        drinkamicablyValues.Add(+1.0f + moodModifier);
+        drinkamicablyValues.Add(0.0f + temperModifier);
+        drinkamicablyValues.Add(-2.0f + sociabilityModifier);
+        drinkamicablyValues.Add(-4.0f + sobernessModifier);
+        drinkamicablyValues.Add(0.0f + resourcesModifier);
+        List<float> drinkbeligerentlyValues = new List<float>();
+        drinkbeligerentlyValues.Add(+2.0f + hungerModifier);
+        drinkbeligerentlyValues.Add(-2.0f + energyModifier);
+        drinkbeligerentlyValues.Add(-2.0f + wealthModifier);
+        drinkbeligerentlyValues.Add(-1.0f + moodModifier);
+        drinkbeligerentlyValues.Add(+2.0f + temperModifier);
+        drinkbeligerentlyValues.Add(-2.0f + sociabilityModifier);
+        drinkbeligerentlyValues.Add(-4.0f + sobernessModifier);
+        drinkbeligerentlyValues.Add(+0.0f + resourcesModifier);
+        List<float> prayatchurchValues = new List<float>();
+        prayatchurchValues.Add(+2.0f + hungerModifier);
+        prayatchurchValues.Add(-1.0f + energyModifier);
+        prayatchurchValues.Add(0.0f + wealthModifier);
+        prayatchurchValues.Add(+1.0f + moodModifier);
+        prayatchurchValues.Add(+3.0f + temperModifier);
+        prayatchurchValues.Add(-1.0f + sociabilityModifier);
+        prayatchurchValues.Add(+0.0f + sobernessModifier);
+        prayatchurchValues.Add(-0.0f + resourcesModifier);
+        List<float> gofishingValues = new List<float>();
+        gofishingValues.Add(2.0f + hungerModifier);
+        gofishingValues.Add(-1.0f + energyModifier);
+        gofishingValues.Add(0.0f + wealthModifier);
+        gofishingValues.Add(+1.0f + moodModifier);
+        gofishingValues.Add(+2.0f + temperModifier);
+        gofishingValues.Add(+1.0f + sociabilityModifier);
+        gofishingValues.Add(+0.0f + sobernessModifier);
+        gofishingValues.Add(+3.0f + resourcesModifier);
+        List<float> sleeponthejobValues = new List<float>();
+        sleeponthejobValues.Add(+1.0f + hungerModifier);
+        sleeponthejobValues.Add(+2.0f + energyModifier);
+        sleeponthejobValues.Add(+0.0f + wealthModifier);
+        sleeponthejobValues.Add(+1.0f + moodModifier);
+        sleeponthejobValues.Add(1.0f + temperModifier);
+        sleeponthejobValues.Add(+0.0f + sociabilityModifier);
+        sleeponthejobValues.Add(+2.0f + sobernessModifier);
+        sleeponthejobValues.Add(+0.0f + resourcesModifier);
+        List<float> workdiligentlyValues = new List<float>();
+        workdiligentlyValues.Add(+3.0f + hungerModifier);
+        workdiligentlyValues.Add(-3.0f + energyModifier);
+        workdiligentlyValues.Add(+0.0f + wealthModifier);
+        workdiligentlyValues.Add(-1.0f + moodModifier);
+        workdiligentlyValues.Add(0.0f + temperModifier);
+        workdiligentlyValues.Add(+2.0f + sociabilityModifier);
+        workdiligentlyValues.Add(+0.0f + sobernessModifier);
+        workdiligentlyValues.Add(+4.0f + resourcesModifier);
+        List<float> sellwaresValues = new List<float>();
+        sellwaresValues.Add(+3.0f + hungerModifier);
+        sellwaresValues.Add(-3.0f + energyModifier);
+        sellwaresValues.Add(+4.0f + wealthModifier);
+        sellwaresValues.Add(+0.0f + moodModifier);
+        sellwaresValues.Add(0.0f + temperModifier);
+        sellwaresValues.Add(-2.0f + sociabilityModifier);
+        sellwaresValues.Add(+0.0f + sobernessModifier);
+        sellwaresValues.Add(-3.0f + resourcesModifier);
+        List<float> socialiseniceValues = new List<float>();
+        socialiseniceValues.Add(+2.0f + hungerModifier);
+        socialiseniceValues.Add(-1.0f + energyModifier);
+        socialiseniceValues.Add(+0.0f + wealthModifier);
+        socialiseniceValues.Add(+1.0f + moodModifier);
+        socialiseniceValues.Add(+0.0f + temperModifier);
+        socialiseniceValues.Add(-1.0f + sociabilityModifier);
+        socialiseniceValues.Add(+0.0f + sobernessModifier);
+        socialiseniceValues.Add(-1.0f + resourcesModifier);
+        List<float> socialisemeanValues = new List<float>();
+        socialisemeanValues.Add(+2.0f + hungerModifier);
+        socialisemeanValues.Add(-1.0f + energyModifier);
+        socialisemeanValues.Add(+0.0f + wealthModifier);
+        socialisemeanValues.Add(-1.0f + moodModifier);
+        socialisemeanValues.Add(+0.0f + temperModifier);
+        socialisemeanValues.Add(-2.0f + sociabilityModifier);
+        socialisemeanValues.Add(0.0f + sobernessModifier);
+        socialisemeanValues.Add(0.0f + resourcesModifier);
+        List<float> assistValues = new List<float>();
+        assistValues.Add(+3.0f + hungerModifier);
+        assistValues.Add(-2.0f + energyModifier);
+        assistValues.Add(+0.0f + wealthModifier);
+        assistValues.Add(+1.0f + moodModifier);
+        assistValues.Add(0.0f + temperModifier);
+        assistValues.Add(-1.0f + sociabilityModifier);
+        assistValues.Add(+0.0f + sobernessModifier);
+        assistValues.Add(-1.0f + resourcesModifier);
+
+        #endregion
+
+        //clear the dictionary in case its being rebuilt
+        actionModifierDictionary.Clear();
+
+        //add a string-vector entry for every leaf action that can be performed
+        actionModifierDictionary.Add("buyfoodatmarket", buyfoodatmarketValues);
+        actionModifierDictionary.Add("eatfoodathome", eatfoodathomeValues);
+        actionModifierDictionary.Add("stealfood", stealfoodValues);
+        actionModifierDictionary.Add("sleepathome", sleepathomeValues);
+        actionModifierDictionary.Add("sleeponthespot", sleeponthespotValues);
+        actionModifierDictionary.Add("drinkattavern", drinkattavernValues);
+        actionModifierDictionary.Add("drinkamicably", drinkamicablyValues);
+        actionModifierDictionary.Add("drinkbelligerently", drinkbeligerentlyValues);
+        actionModifierDictionary.Add("prayatchurch", prayatchurchValues);
+        actionModifierDictionary.Add("gofishing", gofishingValues);
+        actionModifierDictionary.Add("workdiligently", workdiligentlyValues);
+        actionModifierDictionary.Add("sellwares", sellwaresValues);
+        actionModifierDictionary.Add("sleeponthejob", sleeponthejobValues);
+        actionModifierDictionary.Add("socialisenice", socialiseniceValues);
+        actionModifierDictionary.Add("socialisemean", socialisemeanValues);
+    }
+
+    // gets the action modifier for a given state variable (index)
+    float GenerateActionModifiers(int varIndex)
     {
         // returns a modifier proportional to how much the state variable is affected by performing an action
+
         // @TODO add some pseudorandom noise - pcg
 
-        float oContrib = personalityModifierInfluences[0, index] * OpennessToExperience;
-        float cContrib = personalityModifierInfluences[1, index] * Concientiousness;
-        float eContrib = personalityModifierInfluences[2, index] * Extroversion;
-        float aContrib = personalityModifierInfluences[3, index] * Agreeableness;
-        float nContrib = personalityModifierInfluences[4, index] * Neuroticism;
+        float oContrib = personalityModifierInfluences[0, varIndex] * OpennessToExperience;
+        float cContrib = personalityModifierInfluences[1, varIndex] * Concientiousness;
+        float eContrib = personalityModifierInfluences[2, varIndex] * Extroversion;
+        float aContrib = personalityModifierInfluences[3, varIndex] * Agreeableness;
+        float nContrib = personalityModifierInfluences[4, varIndex] * NonNeuroticism;
 
-
+        // contribution from all of the personality values
         float modifier = oContrib + cContrib + eContrib + aContrib + nContrib;
-
-
 
         return modifier;
     }
+
+    #endregion
+
+
+
 
 
 
     //@TODO could be moved to a global place?
     #region Global data storage
-
+    /*
+     * This is hardcoded stuff for the agents to build weights and action modifiers from
+     */
+    
     void BuildPersonalityWeightInfluences()
     {
         // rows ascending
@@ -269,181 +512,6 @@ public class Personality : MonoBehaviour {
                 personalityModifierInfluences[i, j] *= 0.2f;
     }
 
-
-    void BuildActionModifiers()
-    {
-        /*
-            State variables:
-            Hunger
-            Energy
-            Wealth
-            Mood
-            Temper
-            Sociability
-            Soberness
-            Resources
-        */
-
-        //This is temporary, creates the modification vectors for every action in the game
-        //Important to ensure that the list of state parameters is in the same order as the modification vectors in the dictionary
-
-        // the money option in particular could be different, how could the agent's personality specify how much money they spend?
-
-        float hungerModifier = GenerateActionModifiers(1);
-        float energyModifier = GenerateActionModifiers(2);
-        float wealthModifier = GenerateActionModifiers(3);
-        float moodModifier = GenerateActionModifiers(4);
-        float temperModifier = GenerateActionModifiers(5);
-        float sociabilityModifier = GenerateActionModifiers(6);
-        float sobernessModifier = GenerateActionModifiers(7);
-        float resourcesModifier = GenerateActionModifiers(8);
-
-
-        List<float> buyfoodatmarketValues = new List<float>();
-        buyfoodatmarketValues.Add(-4.0f + hungerModifier);
-        buyfoodatmarketValues.Add(-1.0f + energyModifier);
-        buyfoodatmarketValues.Add(-3.0f);
-        buyfoodatmarketValues.Add(+0.0f);
-        buyfoodatmarketValues.Add(+1.0f);
-        buyfoodatmarketValues.Add(-1.0f);
-        buyfoodatmarketValues.Add(0.0f);
-        buyfoodatmarketValues.Add(0.0f);
-        List<float> eatfoodathomeValues = new List<float>();
-        eatfoodathomeValues.Add(-4.0f + hungerModifier);
-        eatfoodathomeValues.Add(-1.0f + energyModifier);
-        eatfoodathomeValues.Add(-2.0f);
-        eatfoodathomeValues.Add(0.0f);
-        eatfoodathomeValues.Add(+1.0f);
-        eatfoodathomeValues.Add(3.0f);
-        eatfoodathomeValues.Add(+0.0f);
-        eatfoodathomeValues.Add(-2.0f);
-        List<float> stealfoodValues = new List<float>();
-        stealfoodValues.Add(-2.0f + hungerModifier);
-        stealfoodValues.Add(-2.0f + energyModifier);
-        stealfoodValues.Add(+0.0f);
-        stealfoodValues.Add(-1.0f);
-        stealfoodValues.Add(-1.0f);
-        stealfoodValues.Add(+0.0f);
-        stealfoodValues.Add(+0.0f);
-        stealfoodValues.Add(+1.0f);
-        List<float> sleepathomeValues = new List<float>();
-        sleepathomeValues.Add(+1.0f + hungerModifier);
-        sleepathomeValues.Add(+3.0f + energyModifier);
-        sleepathomeValues.Add(+0.0f);
-        sleepathomeValues.Add(1.0f);
-        sleepathomeValues.Add(+3.0f);
-        sleepathomeValues.Add(+2.0f);
-        sleepathomeValues.Add(+4.0f);
-        sleepathomeValues.Add(+0.0f);
-        List<float> sleeponthespotValues = new List<float>();
-        sleeponthespotValues.Add(+1.0f + hungerModifier);
-        sleeponthespotValues.Add(+1.0f);
-        sleeponthespotValues.Add(+0.0f);
-        sleeponthespotValues.Add(-1.0f);
-        sleeponthespotValues.Add(1.0f);
-        sleeponthespotValues.Add(+0.0f);
-        sleeponthespotValues.Add(+4.0f);
-        sleeponthespotValues.Add(+0.0f);
-        List<float> drinkattavernValues = new List<float>();
-        drinkattavernValues.Add(+2.0f + hungerModifier);
-        drinkattavernValues.Add(-2.0f);
-        drinkattavernValues.Add(-2.0f);
-        drinkattavernValues.Add(+1.0f);
-        drinkattavernValues.Add(0.0f);
-        drinkattavernValues.Add(-2.0f);
-        drinkattavernValues.Add(-4.0f);
-        drinkattavernValues.Add(-0.0f);
-        List<float> drinkAmicablyValues = new List<float>();
-        drinkAmicablyValues.Add(+2.0f + hungerModifier);
-        drinkAmicablyValues.Add(-2.0f);
-        drinkAmicablyValues.Add(-2.0f);
-        drinkAmicablyValues.Add(+1.0f);
-        drinkAmicablyValues.Add(0.0f);
-        drinkAmicablyValues.Add(-2.0f);
-        drinkAmicablyValues.Add(-4.0f);
-        drinkAmicablyValues.Add(0.0f);
-        List<float> drinkBeligerentlyValues = new List<float>();
-        drinkBeligerentlyValues.Add(+2.0f + hungerModifier);
-        drinkBeligerentlyValues.Add(-2.0f);
-        drinkBeligerentlyValues.Add(-2.0f);
-        drinkBeligerentlyValues.Add(-1.0f);
-        drinkBeligerentlyValues.Add(+2.0f);
-        drinkBeligerentlyValues.Add(-2.0f);
-        drinkBeligerentlyValues.Add(-4.0f);
-        drinkBeligerentlyValues.Add(+0.0f);
-        List<float> prayatchurchValues = new List<float>();
-        prayatchurchValues.Add(+2.0f + hungerModifier);
-        prayatchurchValues.Add(-1.0f);
-        prayatchurchValues.Add(0.0f);
-        prayatchurchValues.Add(+1.0f);
-        prayatchurchValues.Add(+3.0f);
-        prayatchurchValues.Add(-1.0f);
-        prayatchurchValues.Add(+0.0f);
-        prayatchurchValues.Add(-0.0f);
-        List<float> gofishingValues = new List<float>();
-        gofishingValues.Add(2.0f + hungerModifier);
-        gofishingValues.Add(-1.0f);
-        gofishingValues.Add(0.0f);
-        gofishingValues.Add(+1.0f);
-        gofishingValues.Add(+2.0f);
-        gofishingValues.Add(+1.0f);
-        gofishingValues.Add(+0.0f);
-        gofishingValues.Add(+3.0f);
-        List<float> sleeponthejobValues = new List<float>();
-        sleeponthejobValues.Add(+1.0f + hungerModifier);
-        sleeponthejobValues.Add(+2.0f);
-        sleeponthejobValues.Add(+0.0f);
-        sleeponthejobValues.Add(+1.0f);
-        sleeponthejobValues.Add(1.0f);
-        sleeponthejobValues.Add(+0.0f);
-        sleeponthejobValues.Add(+2.0f);
-        sleeponthejobValues.Add(+0.0f);
-        List<float> workdiligentlyValues = new List<float>();
-        workdiligentlyValues.Add(+3.0f + hungerModifier);
-        workdiligentlyValues.Add(-3.0f);
-        workdiligentlyValues.Add(+0.0f);
-        workdiligentlyValues.Add(-1.0f);
-        workdiligentlyValues.Add(0.0f);
-        workdiligentlyValues.Add(+2.0f);
-        workdiligentlyValues.Add(+0.0f);
-        workdiligentlyValues.Add(+4.0f);
-        List<float> sellwaresValues = new List<float>();
-        sellwaresValues.Add(+3.0f + hungerModifier);
-        sellwaresValues.Add(-3.0f);
-        sellwaresValues.Add(+4.0f);
-        sellwaresValues.Add(+0.0f);
-        sellwaresValues.Add(0.0f);
-        sellwaresValues.Add(-2.0f);
-        sellwaresValues.Add(+0.0f);
-        sellwaresValues.Add(-3.0f);
-        List<float> socialiseNiceValues = new List<float>();
-        socialiseNiceValues.Add(+2.0f + hungerModifier);
-        socialiseNiceValues.Add(-1.0f);
-        socialiseNiceValues.Add(+0.0f);
-        socialiseNiceValues.Add(+1.0f);
-        socialiseNiceValues.Add(+0.0f);
-        socialiseNiceValues.Add(-1.0f);
-        socialiseNiceValues.Add(+0.0f);
-        socialiseNiceValues.Add(-1.0f);
-        List<float> socialiseMeanValues = new List<float>();
-        socialiseMeanValues.Add(+2.0f + hungerModifier);
-        socialiseMeanValues.Add(-1.0f);
-        socialiseMeanValues.Add(+0.0f);
-        socialiseMeanValues.Add(-1.0f);
-        socialiseMeanValues.Add(+0.0f);
-        socialiseMeanValues.Add(-2.0f);
-        socialiseMeanValues.Add(0.0f);
-        socialiseMeanValues.Add(0.0f);
-        List<float> assistValues = new List<float>();
-        assistValues.Add(+3.0f + hungerModifier);
-        assistValues.Add(-2.0f);
-        assistValues.Add(+0.0f);
-        assistValues.Add(+1.0f);
-        assistValues.Add(0.0f);
-        assistValues.Add(-1.0f);
-        assistValues.Add(+0.0f);
-        assistValues.Add(-1.0f);
-    }
 
     private void BuildStateVarDictionary()
     {
