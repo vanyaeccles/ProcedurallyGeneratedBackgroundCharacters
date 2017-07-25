@@ -157,14 +157,14 @@ public class Personality : MonoBehaviour {
         float resourcesModifier = GetActionModifier(8);
 
         //Check values
-        Debug.Log("hunger" + hungerModifier);
-        Debug.Log("energy" + energyModifier);
-        Debug.Log("wealth" + wealthModifier);
-        Debug.Log("mood" + moodModifier);
-        Debug.Log("temper" + temperModifier);
-        Debug.Log("sociability" + sociabilityModifier);
-        Debug.Log("soberness" + sobernessModifier);
-        Debug.Log("resources" + resourcesModifier);
+        //Debug.Log("hunger" + hungerModifier);
+        //Debug.Log("energy" + energyModifier);
+        //Debug.Log("wealth" + wealthModifier);
+        //Debug.Log("mood" + moodModifier);
+        //Debug.Log("temper" + temperModifier);
+        //Debug.Log("sociability" + sociabilityModifier);
+        //Debug.Log("soberness" + sobernessModifier);
+        //Debug.Log("resources" + resourcesModifier);
 
 
         // Each action modifier is a combination of harcoded values that represent an action's effect on a variable

@@ -27,8 +27,10 @@ public class Character : MonoBehaviour
     //relationships, modelled as state parameters
     public AgentStateVarFloat Agent1;
 
-    
 
+
+    // logging of agent behaiour info
+    List<AgentLog> behaviourLog = new List<AgentLog>();
     
 
 
@@ -245,7 +247,36 @@ public class Character : MonoBehaviour
 
             stateVector[i].value += stateModifier * UtilityTime.time;
         }
+
+
+        // logging behaviour info
+        LogAction(action);
     }
+
+    void LogAction(string _action)
+    {
+        //@TODO finish this
+        if (behaviourLog.Count <= 0)
+        {
+            Debug.Log("First action: " + _action);
+            behaviourLog.Add(new AgentLog(_action));
+        }
+            
+
+        if(_action != behaviourLog[behaviourLog.Count - 1].action)
+        {
+            Debug.Log("Action: " + behaviourLog[behaviourLog.Count - 1].action + " ended");
+
+            behaviourLog.Add(new AgentLog(_action));
+
+            Debug.Log("New action: " + behaviourLog[behaviourLog.Count - 1].action);
+        }
+            
+
+        behaviourLog[behaviourLog.Count - 1].duration += UtilityTime.time;
+        //Debug.Log("Current action time: " + behaviourLog[behaviourLog.Count - 1].duration);
+    }
+
 
     void SetActionDelegates()
     {

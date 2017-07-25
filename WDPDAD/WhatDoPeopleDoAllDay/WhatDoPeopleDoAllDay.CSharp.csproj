@@ -87,6 +87,7 @@
     <Compile Include="Assets\Scripts\ActionBehaviour.cs" />
     <Compile Include="Assets\Scripts\ActionConsideration.cs" />
     <Compile Include="Assets\Scripts\Agent.cs" />
+    <Compile Include="Assets\Scripts\AgentLog.cs" />
     <Compile Include="Assets\Scripts\AgentStateParameter.cs" />
     <Compile Include="Assets\Scripts\AgentStateVarFloat.cs" />
     <Compile Include="Assets\Scripts\Character.cs" />
