@@ -70,19 +70,9 @@ public class Agent : MonoBehaviour
 
     public void SetVoidActionDelegate(string name, ActionBehaviour.Del del)
     {
-
-        //for (int i = 0; i < linkedRootActions.Count; i++)
-        //{
-        //    if (linkedRootActions[i].action.name == name)
-        //    {
-        //        SetActionDelegate(linkedRootActions[i].action, del);
-        //        return;
-        //    }
-        //    else
-                CheckActionChildren(linkedRootAction.action, name, del);
-        //}
-
+         CheckActionChildren(linkedRootAction.action, name, del);
     }
+
 
     public void SetActionDelegate(ActionBehaviour action, ActionBehaviour.Del del)
     {

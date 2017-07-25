@@ -48,8 +48,9 @@ public class Personality : MonoBehaviour {
         BuildPersonalityWeightInfluences();
         BuildStateVarDictionary();
 
+
         BuildPersonalityModifierInfluences();
-        BuildActionModifiers();
+        GenerateActionModifiers();
 
         
 
@@ -92,7 +93,7 @@ public class Personality : MonoBehaviour {
         // returns a weight proportional to how much the agent cares about that state variable
         // ie low 'concientiousness' would translate to a disregard for 'time of day' as a relevant variable
 
-        // map from -1.0,1.0 to 0.0,1.0
+        // map from -1.0,1.0 range to 0.0,1.0
         float normO = NormaliseFloat(OpennessToExperience, 1.0f, -1.0f);
         float normC = NormaliseFloat(Concientiousness, 1.0f, -1.0f);
         float normE = NormaliseFloat(Extroversion, 1.0f, -1.0f);
@@ -128,7 +129,7 @@ public class Personality : MonoBehaviour {
     #region Making Action Modifiers
 
     // this builds the agents action modifier vectors and stores them in a dictionary
-    void BuildActionModifiers()
+    void GenerateActionModifiers()
     {
         /*
             State variables:
@@ -145,21 +146,26 @@ public class Personality : MonoBehaviour {
         // NB Important to ensure that the list of state parameters is in the same order
         // as the modification vectors in the dictionary
 
-        // get the agent specific modifiers 
-        float hungerModifier = GenerateActionModifiers(1);
-        float energyModifier = GenerateActionModifiers(2);
-        float wealthModifier = GenerateActionModifiers(3);
-        float moodModifier = GenerateActionModifiers(4);
-        float temperModifier = GenerateActionModifiers(5);
-        float sociabilityModifier = GenerateActionModifiers(6);
-        float sobernessModifier = GenerateActionModifiers(7);
-        float resourcesModifier = GenerateActionModifiers(8);
+        // get the agent personality specific modifiers 
+        float hungerModifier = GetActionModifier(1);
+        float energyModifier = GetActionModifier(2);
+        float wealthModifier = GetActionModifier(3);
+        float moodModifier = GetActionModifier(4);
+        float temperModifier = GetActionModifier(5);
+        float sociabilityModifier = GetActionModifier(6);
+        float sobernessModifier = GetActionModifier(7);
+        float resourcesModifier = GetActionModifier(8);
 
+        //Check values
+        Debug.Log("hunger" + hungerModifier);
+        Debug.Log("energy" + energyModifier);
+        Debug.Log("wealth" + wealthModifier);
+        Debug.Log("mood" + moodModifier);
+        Debug.Log("temper" + temperModifier);
+        Debug.Log("sociability" + sociabilityModifier);
+        Debug.Log("soberness" + sobernessModifier);
+        Debug.Log("resources" + resourcesModifier);
 
-        //Debug.Log("hunger" + hungerModifier);
-        //Debug.Log("energy" + energyModifier);
-        //Debug.Log("wealth" + wealthModifier);
-        //Debug.Log("mood" + moodModifier);
 
         // Each action modifier is a combination of harcoded values that represent an action's effect on a variable
         // this is combined with a specific modifier generated from the agent's personality
@@ -175,6 +181,7 @@ public class Personality : MonoBehaviour {
         buyfoodatmarketValues.Add(-1.0f + sociabilityModifier);
         buyfoodatmarketValues.Add(0.0f + sobernessModifier);
         buyfoodatmarketValues.Add(0.0f + resourcesModifier);
+
         List<float> eatfoodathomeValues = new List<float>();
         eatfoodathomeValues.Add(-4.0f + hungerModifier);
         eatfoodathomeValues.Add(-1.0f + energyModifier);
@@ -184,6 +191,7 @@ public class Personality : MonoBehaviour {
         eatfoodathomeValues.Add(3.0f + sociabilityModifier);
         eatfoodathomeValues.Add(+0.0f + sobernessModifier);
         eatfoodathomeValues.Add(-2.0f + resourcesModifier);
+
         List<float> stealfoodValues = new List<float>();
         stealfoodValues.Add(-2.0f + hungerModifier);
         stealfoodValues.Add(-2.0f + energyModifier);
@@ -193,6 +201,7 @@ public class Personality : MonoBehaviour {
         stealfoodValues.Add(+0.0f + sociabilityModifier);
         stealfoodValues.Add(+0.0f + sobernessModifier);
         stealfoodValues.Add(+1.0f + resourcesModifier);
+
         List<float> sleepathomeValues = new List<float>();
         sleepathomeValues.Add(+1.0f + hungerModifier);
         sleepathomeValues.Add(+3.0f + energyModifier);
@@ -202,6 +211,7 @@ public class Personality : MonoBehaviour {
         sleepathomeValues.Add(+2.0f + sociabilityModifier);
         sleepathomeValues.Add(+4.0f + sobernessModifier);
         sleepathomeValues.Add(+0.0f + resourcesModifier);
+
         List<float> sleeponthespotValues = new List<float>();
         sleeponthespotValues.Add(+1.0f + hungerModifier);
         sleeponthespotValues.Add(+1.0f + energyModifier);
@@ -211,6 +221,7 @@ public class Personality : MonoBehaviour {
         sleeponthespotValues.Add(+0.0f + sociabilityModifier);
         sleeponthespotValues.Add(+4.0f + sobernessModifier);
         sleeponthespotValues.Add(+0.0f + resourcesModifier);
+
         List<float> drinkattavernValues = new List<float>();
         drinkattavernValues.Add(+2.0f + hungerModifier);
         drinkattavernValues.Add(-2.0f + energyModifier);
@@ -220,6 +231,7 @@ public class Personality : MonoBehaviour {
         drinkattavernValues.Add(-2.0f + sociabilityModifier);
         drinkattavernValues.Add(-4.0f + sobernessModifier);
         drinkattavernValues.Add(-0.0f + resourcesModifier);
+
         List<float> drinkamicablyValues = new List<float>();
         drinkamicablyValues.Add(+2.0f + hungerModifier);
         drinkamicablyValues.Add(-2.0f + energyModifier);
@@ -229,6 +241,7 @@ public class Personality : MonoBehaviour {
         drinkamicablyValues.Add(-2.0f + sociabilityModifier);
         drinkamicablyValues.Add(-4.0f + sobernessModifier);
         drinkamicablyValues.Add(0.0f + resourcesModifier);
+
         List<float> drinkbeligerentlyValues = new List<float>();
         drinkbeligerentlyValues.Add(+2.0f + hungerModifier);
         drinkbeligerentlyValues.Add(-2.0f + energyModifier);
@@ -238,6 +251,7 @@ public class Personality : MonoBehaviour {
         drinkbeligerentlyValues.Add(-2.0f + sociabilityModifier);
         drinkbeligerentlyValues.Add(-4.0f + sobernessModifier);
         drinkbeligerentlyValues.Add(+0.0f + resourcesModifier);
+
         List<float> prayatchurchValues = new List<float>();
         prayatchurchValues.Add(+2.0f + hungerModifier);
         prayatchurchValues.Add(-1.0f + energyModifier);
@@ -247,6 +261,7 @@ public class Personality : MonoBehaviour {
         prayatchurchValues.Add(-1.0f + sociabilityModifier);
         prayatchurchValues.Add(+0.0f + sobernessModifier);
         prayatchurchValues.Add(-0.0f + resourcesModifier);
+
         List<float> gofishingValues = new List<float>();
         gofishingValues.Add(2.0f + hungerModifier);
         gofishingValues.Add(-1.0f + energyModifier);
@@ -256,6 +271,7 @@ public class Personality : MonoBehaviour {
         gofishingValues.Add(+1.0f + sociabilityModifier);
         gofishingValues.Add(+0.0f + sobernessModifier);
         gofishingValues.Add(+3.0f + resourcesModifier);
+
         List<float> sleeponthejobValues = new List<float>();
         sleeponthejobValues.Add(+1.0f + hungerModifier);
         sleeponthejobValues.Add(+2.0f + energyModifier);
@@ -265,6 +281,7 @@ public class Personality : MonoBehaviour {
         sleeponthejobValues.Add(+0.0f + sociabilityModifier);
         sleeponthejobValues.Add(+2.0f + sobernessModifier);
         sleeponthejobValues.Add(+0.0f + resourcesModifier);
+
         List<float> workdiligentlyValues = new List<float>();
         workdiligentlyValues.Add(+3.0f + hungerModifier);
         workdiligentlyValues.Add(-3.0f + energyModifier);
@@ -274,6 +291,7 @@ public class Personality : MonoBehaviour {
         workdiligentlyValues.Add(+2.0f + sociabilityModifier);
         workdiligentlyValues.Add(+0.0f + sobernessModifier);
         workdiligentlyValues.Add(+4.0f + resourcesModifier);
+
         List<float> sellwaresValues = new List<float>();
         sellwaresValues.Add(+3.0f + hungerModifier);
         sellwaresValues.Add(-3.0f + energyModifier);
@@ -283,6 +301,7 @@ public class Personality : MonoBehaviour {
         sellwaresValues.Add(-2.0f + sociabilityModifier);
         sellwaresValues.Add(+0.0f + sobernessModifier);
         sellwaresValues.Add(-3.0f + resourcesModifier);
+
         List<float> socialiseniceValues = new List<float>();
         socialiseniceValues.Add(+2.0f + hungerModifier);
         socialiseniceValues.Add(-1.0f + energyModifier);
@@ -292,6 +311,7 @@ public class Personality : MonoBehaviour {
         socialiseniceValues.Add(-1.0f + sociabilityModifier);
         socialiseniceValues.Add(+0.0f + sobernessModifier);
         socialiseniceValues.Add(-1.0f + resourcesModifier);
+
         List<float> socialisemeanValues = new List<float>();
         socialisemeanValues.Add(+2.0f + hungerModifier);
         socialisemeanValues.Add(-1.0f + energyModifier);
@@ -301,6 +321,7 @@ public class Personality : MonoBehaviour {
         socialisemeanValues.Add(-2.0f + sociabilityModifier);
         socialisemeanValues.Add(0.0f + sobernessModifier);
         socialisemeanValues.Add(0.0f + resourcesModifier);
+
         List<float> assistValues = new List<float>();
         assistValues.Add(+3.0f + hungerModifier);
         assistValues.Add(-2.0f + energyModifier);
@@ -335,7 +356,7 @@ public class Personality : MonoBehaviour {
     }
 
     // gets the action modifier for a given state variable (index)
-    float GenerateActionModifiers(int varIndex)
+    float GetActionModifier(int varIndex)
     {
         // returns a modifier proportional to how much the state variable is affected by performing an action
 
@@ -362,14 +383,18 @@ public class Personality : MonoBehaviour {
 
     //@TODO could be moved to a global place?
     #region Global data storage
+
     /*
      * This is hardcoded stuff for the agents to build weights and action modifiers from
      */
     
     void BuildPersonalityWeightInfluences()
     {
+        // These signify how much personality values influence the weights that are generated for each state variable
+
         // rows ascending
         // timeofday relationship 	wealth	hunger	energy	mood	temper	sociability	soberness resources
+
         // columns ascending
         // Neuroticism Agreeableness Extroversion Conscientiousness Openness
 

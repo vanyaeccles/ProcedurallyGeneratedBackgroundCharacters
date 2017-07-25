@@ -39,7 +39,6 @@ public class Character : MonoBehaviour
 
 
         ConstructStateVector();
-        //ConstructActionModifierDictionary();
 
 
         SetActionDelegates();
@@ -154,11 +153,18 @@ public class Character : MonoBehaviour
         Speak("Sleeping on the spot");
     }
 
-    void DrinkAtTavern()
+    void DrinkBelligerently()
     {
         PerformAction("drinkattavern");
 
-        Speak("Drinking at the tavern");
+        Speak("Drinking at the tavern (belligerent)");
+    }
+
+    void DrinkAmicably()
+    {
+        PerformAction("drinkattavern");
+
+        Speak("Drinking at the tavern (Amicable)");
     }
 
     void PrayAtChurch()
@@ -210,6 +216,20 @@ public class Character : MonoBehaviour
         Speak("Socialising");
     }
 
+    void SocialiseNice()
+    {
+        PerformAction("socialisenice");
+
+        Speak("Socialising (nice)");
+    }
+
+    void SocialiseMean()
+    {
+        PerformAction("socialisemean");
+
+        Speak("Socialising (mean)");
+    }
+
 
 
     void PerformAction(string action)
@@ -235,14 +255,16 @@ public class Character : MonoBehaviour
         agent.SetVoidActionDelegate("StealFood", StealFood);
         agent.SetVoidActionDelegate("SleepAtHome", SleepAtHome);
         agent.SetVoidActionDelegate("SleepOnTheSpot", SleepOnTheSpot);
-        agent.SetVoidActionDelegate("DrinkAtTavern", DrinkAtTavern);
+        agent.SetVoidActionDelegate("DrinkBelligerently", DrinkBelligerently);
+        agent.SetVoidActionDelegate("DrinkAmicably", DrinkAmicably);
         agent.SetVoidActionDelegate("PrayAtChurch", PrayAtChurch);
         agent.SetVoidActionDelegate("GoFishing", GoFishing);
-        agent.SetVoidActionDelegate("Blacksmithing", Blacksmithing);
         agent.SetVoidActionDelegate("WorkDiligently", WorkDiligently);
         agent.SetVoidActionDelegate("SleepOnTheJob", SleepOnTheJob);
         agent.SetVoidActionDelegate("SellWares", SellWares);
         agent.SetVoidActionDelegate("Socialise", Socialise);
+        agent.SetVoidActionDelegate("SocialiseNice", SocialiseNice);
+        agent.SetVoidActionDelegate("SocialiseMean", SocialiseMean);
     }
 
     #endregion
