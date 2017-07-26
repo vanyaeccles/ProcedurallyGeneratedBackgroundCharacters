@@ -157,14 +157,14 @@ public class Character : MonoBehaviour
 
     void DrinkBelligerently()
     {
-        PerformAction("drinkattavern");
+        PerformAction("drinkbelligerently");
 
         Speak("Drinking at the tavern (belligerent)");
     }
 
     void DrinkAmicably()
     {
-        PerformAction("drinkattavern");
+        PerformAction("drinkamicably");
 
         Speak("Drinking at the tavern (Amicable)");
     }
