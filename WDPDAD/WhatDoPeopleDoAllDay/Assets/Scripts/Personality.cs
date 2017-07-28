@@ -1,18 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+
 
 public class Personality : MonoBehaviour {
 
 
-    List<float> personalityVector = new List<float>();
+    
 
-    [Header("Personality Vector (Normalised values)")]
+    [Header("Personality Values (please enter at least 2 decimal places)")]
     public float OpennessToExperience;
     public float Concientiousness;
     public float Extroversion;
     public float Agreeableness;
     public float NonNeuroticism;
+    List<float> personalityVector = new List<float>();
 
 
     [Header("Agent State Parameters")]
@@ -41,9 +44,18 @@ public class Personality : MonoBehaviour {
     public Dictionary<string, List<float>> actionModifierDictionary = new Dictionary<string, List<float>>();
 
 
+    private PRNG prng;
+    int seed1, seed2;
+    List<double> randModifiers = new List<double>();
+    List<double> randWeightModifiers = new List<double>();
+
 
     void Awake()
     {
+        prng = GetComponent<PRNG>();
+        GenerateSeeds();
+        GenerateRandomGaussianNumbers();
+
         // the same weight influences for all agents
         BuildPersonalityWeightInfluences();
         BuildStateVarDictionary();
@@ -52,7 +64,7 @@ public class Personality : MonoBehaviour {
         BuildPersonalityModifierInfluences();
         GenerateActionModifiers();
 
-        
+
 
         //Debug.Log(CheckWeight("timeofday"));
         //Debug.Log(CheckWeight("hunger"));
@@ -65,17 +77,6 @@ public class Personality : MonoBehaviour {
         //Debug.Log(CheckWeight("resources"));
     }
 
-    // Use this for initialization
-    void Start ()
-    {
-        personalityVector.Add(OpennessToExperience);
-        personalityVector.Add(Concientiousness);
-        personalityVector.Add(Extroversion);
-        personalityVector.Add(Agreeableness);
-        personalityVector.Add(NonNeuroticism);
-    }
-
-
 
     #region Making Decision Weights
 
@@ -83,12 +84,12 @@ public class Personality : MonoBehaviour {
     public float CheckWeight(string stateVar)
     {
         //gets the index from the state variable provided as a string
-        int index = StateVarDictionary[stateVar];
+        int index0 = StateVarDictionary[stateVar];
 
-        return GenerateWeight(index);
+        return GenerateWeight(index0);
     }
 
-    float GenerateWeight(int index)
+    float GenerateWeight(int index1)
     {
         // returns a weight proportional to how much the agent cares about that state variable
         // ie low 'concientiousness' would translate to a disregard for 'time of day' as a relevant variable
@@ -104,20 +105,28 @@ public class Personality : MonoBehaviour {
 
         // @TODO add some pseudorandom noise - pcg
 
-        float oContrib = personalityWeightInfluences[0, index] * normO;
-        float cContrib = personalityWeightInfluences[1, index] * normC;
-        float eContrib = personalityWeightInfluences[2, index] * normE;
-        float aContrib = personalityWeightInfluences[3, index] * normA;
-        float nContrib = personalityWeightInfluences[4, index] * normN;
+        float oContrib = personalityWeightInfluences[0, index1] * normO;
+        float cContrib = personalityWeightInfluences[1, index1] * normC;
+        float eContrib = personalityWeightInfluences[2, index1] * normE;
+        float aContrib = personalityWeightInfluences[3, index1] * normA;
+        float nContrib = personalityWeightInfluences[4, index1] * normN;
 
 
-        float weight = 1.0f + oContrib + cContrib + eContrib + aContrib + nContrib;
+        //weight is composed of a mean value (from gaussian with mean of 1.0f) + contributions from personality
+        float weight = (float)randWeightModifiers[index1] + oContrib + cContrib + eContrib + aContrib + nContrib;
+
+        //Debug.Log(weight);
+
+        float contrib = oContrib + cContrib + eContrib + aContrib + nContrib;
+
+        //Debug.Log("diff: " + contrib);
 
         return weight;
     }
 
     float NormaliseFloat(float inputVal, float max, float min)
     {
+        //normalises a float from a specified range to [0,1]
         return (inputVal - min) / (max - min);
     }
 
@@ -368,13 +377,26 @@ public class Personality : MonoBehaviour {
         float aContrib = personalityModifierInfluences[3, varIndex] * Agreeableness;
         float nContrib = personalityModifierInfluences[4, varIndex] * NonNeuroticism;
 
-        // contribution from all of the personality values
-        float modifier = oContrib + cContrib + eContrib + aContrib + nContrib;
+        // contribution from all of the personality values, 
+        //the mean of the PCG distribution
+        float originalModifier = oContrib + cContrib + eContrib + aContrib + nContrib;
 
-        return modifier;
+
+        float pcgModifier = originalModifier + (float)randModifiers[varIndex];
+
+        //Debug.Log("Original Modifier: " + originalModifier);
+        //Debug.Log("With PCG modification: " + pcgModifier);
+
+        return pcgModifier;
     }
 
+
     #endregion
+
+
+
+
+
 
 
 
@@ -463,7 +485,7 @@ public class Personality : MonoBehaviour {
         // limit the values to within -0.1 to +0.1
         for (int i = 0; i < personalityWeightInfluences.GetLength(0); i++)
             for (int j = 0; j < personalityWeightInfluences.GetLength(1); j++)
-                personalityWeightInfluences[i, j] *= 0.02f;
+                personalityWeightInfluences[i, j] *= 0.2f;
     }
 
 
@@ -475,66 +497,66 @@ public class Personality : MonoBehaviour {
         // Neuroticism Agreeableness Extroversion Conscientiousness Openness
 
         //relationship
-        personalityModifierInfluences[0, 0] = -1.0f;
+        personalityModifierInfluences[0, 0] = +3.0f;
         personalityModifierInfluences[1, 0] = 0.0f;
-        personalityModifierInfluences[2, 0] = +1.0f;
-        personalityModifierInfluences[3, 0] = +1.0f;
-        personalityModifierInfluences[4, 0] = -2.0f;
+        personalityModifierInfluences[2, 0] = 0.0f;
+        personalityModifierInfluences[3, 0] = 0.0f;
+        personalityModifierInfluences[4, 0] = 0.0f;
         //hunger
         personalityModifierInfluences[0, 1] = 0.0f;
-        personalityModifierInfluences[1, 1] = -1.0f;
+        personalityModifierInfluences[1, 1] = 0.0f;
         personalityModifierInfluences[2, 1] = 0.0f;
-        personalityModifierInfluences[3, 1] = -1.0f;
-        personalityModifierInfluences[4, 1] = +1.0f;
+        personalityModifierInfluences[3, 1] = 0.0f;
+        personalityModifierInfluences[4, 1] = +3.0f;
         //energy
         personalityModifierInfluences[0, 2] = 0.0f;
         personalityModifierInfluences[1, 2] = 0.0f;
-        personalityModifierInfluences[2, 2] = +1.0f;
-        personalityModifierInfluences[3, 2] = +1.0f;
-        personalityModifierInfluences[4, 2] = -1.0f;
+        personalityModifierInfluences[2, 2] = +3.0f;
+        personalityModifierInfluences[3, 2] = 0.0f;
+        personalityModifierInfluences[4, 2] = 0.0f;
         //wealth
-        personalityModifierInfluences[0, 3] = -1.0f;
-        personalityModifierInfluences[1, 3] = +1.0f;
+        personalityModifierInfluences[0, 3] = 0.0f;
+        personalityModifierInfluences[1, 3] = +3.0f;
         personalityModifierInfluences[2, 3] = 0.0f;
-        personalityModifierInfluences[3, 3] = +1.0f;
-        personalityModifierInfluences[4, 3] = -2.0f;
+        personalityModifierInfluences[3, 3] = 0.0f;
+        personalityModifierInfluences[4, 3] = 0.0f;
         //mood
-        personalityModifierInfluences[0, 4] = +1.0f;
-        personalityModifierInfluences[1, 4] = +1.0f;
+        personalityModifierInfluences[0, 4] = 0.0f;
+        personalityModifierInfluences[1, 4] = 0.0f;
         personalityModifierInfluences[2, 4] = 0.0f;
-        personalityModifierInfluences[3, 4] = +2.0f;
-        personalityModifierInfluences[4, 4] = +2.0f;
+        personalityModifierInfluences[3, 4] = 0.0f;
+        personalityModifierInfluences[4, 4] = +3.0f;
         //temper
         personalityModifierInfluences[0, 5] = 0.0f;
-        personalityModifierInfluences[1, 5] = +1.0f;
+        personalityModifierInfluences[1, 5] = 0.0f;
         personalityModifierInfluences[2, 5] = 0.0f;
-        personalityModifierInfluences[3, 5] = +1.0f;
-        personalityModifierInfluences[4, 5] = -2.0f;
+        personalityModifierInfluences[3, 5] = +3.0f;
+        personalityModifierInfluences[4, 5] = 0.0f;
         //sociability
-        personalityModifierInfluences[0, 6] = +1.0f;
-        personalityModifierInfluences[1, 6] = -1.0f;
-        personalityModifierInfluences[2, 6] = +1.0f;
-        personalityModifierInfluences[3, 6] = -1.0f;
-        personalityModifierInfluences[4, 6] = +1.0f;
+        personalityModifierInfluences[0, 6] = 0.0f;
+        personalityModifierInfluences[1, 6] = 0.0f;
+        personalityModifierInfluences[2, 6] = +3.0f;
+        personalityModifierInfluences[3, 6] = 0.0f;
+        personalityModifierInfluences[4, 6] = 0.0f;
         //soberness
         personalityModifierInfluences[0, 7] = 0.0f;
-        personalityModifierInfluences[1, 7] = -1.0f;
-        personalityModifierInfluences[2, 7] = +1.0f;
-        personalityModifierInfluences[3, 7] = -1.0f;
+        personalityModifierInfluences[1, 7] = 0.0f;
+        personalityModifierInfluences[2, 7] = 0.0f;
+        personalityModifierInfluences[3, 7] = +3.0f;
         personalityModifierInfluences[4, 7] = 0.0f;
         //resources
         personalityModifierInfluences[0, 8] = 0.0f;
-        personalityModifierInfluences[1, 8] = -2.0f;
-        personalityModifierInfluences[2, 8] = 1.0f;
-        personalityModifierInfluences[3, 8] = -1.0f;
-        personalityModifierInfluences[4, 8] = 1.0f;
+        personalityModifierInfluences[1, 8] = +3.0f;
+        personalityModifierInfluences[2, 8] = 0.0f;
+        personalityModifierInfluences[3, 8] = 0.0f;
+        personalityModifierInfluences[4, 8] = 0.0f;
         
 
 
         // limit the values to within -1.0 to +1.0
-        for (int i = 0; i < personalityModifierInfluences.GetLength(0); i++)
-            for (int j = 0; j < personalityModifierInfluences.GetLength(1); j++)
-                personalityModifierInfluences[i, j] *= 0.2f;
+        //for (int i = 0; i < personalityModifierInfluences.GetLength(0); i++)
+        //    for (int j = 0; j < personalityModifierInfluences.GetLength(1); j++)
+        //        personalityModifierInfluences[i, j] *= 0.2f;
     }
 
 
@@ -579,5 +601,104 @@ public class Personality : MonoBehaviour {
     }
 
     #endregion
+
+
+
+
+    #region PROCEDURAL CONTENT GENERATION
+
+
+    void GenerateRandomGaussianNumbers()
+    {
+        // Initialise with seed numbers
+        // provided with 2 integers between 0 and ~ 30000
+        prng.RandomInitialise(seed1, seed2);
+
+
+        randModifiers.Clear();
+        randWeightModifiers.Clear();
+
+
+        double mean = 0.0f;
+        double stdev = 1.0f;
+
+        for (int i = 0; i < 9; i++)
+        {
+            // assuming the seed is the same, this will generate a the same list of numbers picked from a gaussian dist
+            randModifiers.Add(prng.RandomGaussian(mean, stdev));
+
+            //Debug.Log(prng.RandomGaussian(mean, stdev));
+        }
+
+        for (int i = 0; i < 20; i++)
+        {
+            // reset the mean + stddev for weights, these need to be less dramatic @TODO test this
+            mean = 1.0f;
+            stdev = 0.2f; 
+            randWeightModifiers.Add(prng.RandomGaussian(mean, stdev));
+        }
+    }
+
+
+
+    void GenerateSeeds()
+    {
+        // makes two seeds between 0 and 30000, derived from personality values
+
+        // clear the list in case the values have been modified, then add them
+        personalityVector.Clear();
+        personalityVector.Add(OpennessToExperience);
+        personalityVector.Add(Concientiousness);
+        personalityVector.Add(Extroversion);
+        personalityVector.Add(Agreeableness);
+        personalityVector.Add(NonNeuroticism);
+
+        string seedString1 = "";
+        string seedString2 = "";
+
+        foreach (float pvalue in personalityVector)
+        {
+
+            float npvalue = NormaliseFloat(pvalue, 1.0f, -1.0f);
+
+            //Remove everything starting with index 0 and ending at the index of ([the dot .] + 1)
+            string personVal = npvalue.ToString().Remove(0, npvalue.ToString().IndexOf(".") + 1);
+
+            // values from personality contribute to the PRNG seed
+            seedString1 += personVal[0];
+            seedString2 += personVal[1];
+        }
+
+        //Debug.Log(seedString1);
+        //Debug.Log(seedString2);
+
+        // convert back to a number
+        seed1 = Convert.ToInt32(seedString1);
+        seed2 = Convert.ToInt32(seedString2);
+
+        // scale them to size
+        seed1 = TestSeed(seed1);
+        seed2 = TestSeed(seed2);
+
+        //Debug.Log(seed1);
+        //Debug.Log(seed2);
+    }
+
+
+    int TestSeed(int seed2test)
+    {
+        //ensures seed is less than 30000 (required by PRNG)
+        while(seed2test > 30000)
+        {
+            //@TODO division is a little expensive?
+            seed2test /= 2;
+        }
+        
+        return seed2test;
+    }
+
+    #endregion
+
+
 
 }
