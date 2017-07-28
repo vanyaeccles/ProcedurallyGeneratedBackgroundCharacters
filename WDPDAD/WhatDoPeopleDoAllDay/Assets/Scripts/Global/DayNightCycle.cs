@@ -10,7 +10,8 @@ public class DayNightCycle : MonoBehaviour {
 
     public float angle = 0.0f;
 
-    float hoursPerFrame = 0.0f;
+    [HideInInspector]
+    public float hoursPerFrame;
 
     float anglesPerHour = 15.0f;
 
@@ -20,7 +21,7 @@ public class DayNightCycle : MonoBehaviour {
     {
 
         // Update the sun's rotation (geocentric)
-        hoursPerFrame = (0.3f * UtilityTime.time);
+        hoursPerFrame = (UtilityTime.time);
 
         angle = hoursPerFrame * anglesPerHour;
         transform.RotateAround(Vector3.zero, Vector3.forward, angle);
