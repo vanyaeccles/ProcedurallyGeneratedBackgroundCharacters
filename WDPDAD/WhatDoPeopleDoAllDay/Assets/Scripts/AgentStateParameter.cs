@@ -18,5 +18,12 @@ public class AgentStateParameter : MonoBehaviour
         get { return normValue; }
     }
 
+
+    // constructor
+
+    public AgentStateParameter()
+    {
+        normValue = 50.0f;
+    }
     
 }

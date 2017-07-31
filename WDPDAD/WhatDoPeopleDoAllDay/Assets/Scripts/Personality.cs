@@ -23,7 +23,9 @@ public class Personality : MonoBehaviour {
     public AgentStateVarFloat energy, wealth, mood, temper, sociability, soberness, resources;
 
     [Header("Relationships")]
-    public AgentStateParameter agent1;
+    public List<Relationship> Relationships = new List<Relationship>();
+
+
 
     [Header("Global")]
     public AgentStateParameter timeofday;
@@ -396,7 +398,41 @@ public class Personality : MonoBehaviour {
 
 
 
+    #region SOCIAL STUFF
+    
+    public AgentStateParameter GetRelationship(string name)
+    {
 
+        foreach (Relationship relly in Relationships)
+        {
+            if (relly.nameOfPerson == name)
+                return relly.relationshipValue;
+        }
+
+        //else, if relationship doesn't exist form a new one
+
+        Relationship newRel = new Relationship(name, new AgentStateVarFloat());
+        Relationships.Add(newRel);
+
+        return newRel.relationshipValue;
+    }
+
+
+    public void ReceiveSocial(string name, bool mean)
+    {
+        // search for relationship based on name
+        foreach (Relationship rel in Relationships)
+            if (rel.nameOfPerson == name)
+            {
+                if (mean)
+                    GetComponent<Character>().ReceiveSocialiseMean(rel);
+                else
+                    GetComponent<Character>().ReceiveSocialiseNice(rel);
+            }  
+    }
+
+
+    #endregion
 
 
 
@@ -409,7 +445,7 @@ public class Personality : MonoBehaviour {
     /*
      * This is hardcoded stuff for the agents to build weights and action modifiers from
      */
-    
+
     void BuildPersonalityWeightInfluences()
     {
         // These signify how much personality values influence the weights that are generated for each state variable
