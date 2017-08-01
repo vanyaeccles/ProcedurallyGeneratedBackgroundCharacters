@@ -155,7 +155,7 @@ public class ActionBehaviour : MonoBehaviour
                 if (isConsoleLogging)
                     Debug.Log("Evaluating " + linkedChildActions[i].action.GetName() + " Score: " + linkedChildActions[i].action.GetActionScore());
 
-                if (linkedChildActions[i].action.GetActionScore() > topActionScore)
+                if (linkedChildActions[i].action.GetActionScore() >= topActionScore)
                 {
                     topAction = linkedChildActions[i].action;
                     topActionScore = linkedChildActions[i].action.GetActionScore();
@@ -285,17 +285,19 @@ public class ActionBehaviour : MonoBehaviour
     {
         //Debug.Log("Executing: " + name);
 
-        //Each action could have a destination or a set of animations
-
-        // Could also have an effect on the agent's state parameters, see Character script
-
-
         if (isLeafAction)
             return;
 
 
         if (TopAction.isLeafAction)
+        {
+            Debug.Log(TopAction);
             owner.SetTarget(TopAction.location);
+        }
+            
+
+        
+
 
         if(isConsoleLogging)
         {

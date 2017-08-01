@@ -34,14 +34,14 @@ public class Character : MonoBehaviour
     
 
 
+
+
     void Start()
     {
         agent = GetComponent<Agent>();
         Walker = GetComponent<NavMeshAgent>();
 
-
         ConstructStateVector();
-
 
         SetActionDelegates();
     }
@@ -68,6 +68,9 @@ public class Character : MonoBehaviour
 
 
 
+
+
+
     #region MOVEMENT
 
     void Move()
@@ -77,10 +80,10 @@ public class Character : MonoBehaviour
 
         //Update movement
         Walker.SetDestination(target.position);
-
+        //Walker.speed = Walker.speed * UtilityTime.speed;
         
 
-        if (Vector3.Distance(transform.position, target.position) < 1.0f)
+        if (Vector3.Distance(transform.position, target.position) < 3.0f)
         {
             anim.Stop();
             //anim.Play("run");
@@ -98,7 +101,17 @@ public class Character : MonoBehaviour
         target = destination;
     }
 
+    // focusses the agent towards an object of attention
+    public void SetFocusPoint(Transform focuspoint)
+    {
+        transform.LookAt(focuspoint);
+    }
+
+
     #endregion
+
+
+
 
 
 
@@ -114,6 +127,9 @@ public class Character : MonoBehaviour
     }
 
     #endregion
+
+
+
 
 
 

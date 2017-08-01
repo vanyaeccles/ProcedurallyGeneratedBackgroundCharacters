@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Relationship 
 {
 
@@ -15,6 +16,11 @@ public class Relationship
     {
         nameOfPerson = _name;
         relationshipValue = _rellyVal;
+    }
+
+    public Relationship()
+    {
+
     }
 
 }

@@ -6,7 +6,7 @@ public class UtilityTime : MonoBehaviour
 
 
     // can set speed to globally scale time calculations
-    public static float speed = 0.03f;
+    public static float speed = 0.5f;
     public static bool paused = false;
 
     

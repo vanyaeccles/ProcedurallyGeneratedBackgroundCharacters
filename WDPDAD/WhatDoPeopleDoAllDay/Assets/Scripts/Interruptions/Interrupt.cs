@@ -7,9 +7,9 @@ public class Interrupt : MonoBehaviour {
     public bool isDebugging;
 
 
-    Agent thisAgent;
-    Personality thisAgentPersonality;
-    Character thisCharacter;
+    public Agent thisAgent;
+    public Personality thisAgentPersonality;
+    public Character thisCharacter;
 
     bool isSocial = true;
     bool isSeekingAssist = false;
@@ -18,14 +18,6 @@ public class Interrupt : MonoBehaviour {
     Interrupt interruptSender;
 
 
-
-    // Use this for initialization
-    void Start ()
-    {
-        thisAgent = GetComponent<Agent>();
-        thisAgentPersonality = GetComponent<Personality>();
-        thisCharacter = GetComponent<Character>();
-    }
 	
 
 
@@ -105,6 +97,9 @@ public class Interrupt : MonoBehaviour {
 
         thisAgent.linkedRootAction.action.TopAction = null;
 
+        //set 'location' of social interaction
+        thisAgent.socialInteruption.action.location = sender.transform;
+
         // set the new top action
         thisAgent.linkedRootAction.action.TopAction = thisAgent.socialInteruption.action;
         thisAgent.linkedRootAction.action.ResetTimer();
@@ -159,11 +154,13 @@ public class Interrupt : MonoBehaviour {
 
     public void SendNiceInteraction()
     {
+        //thisCharacter.SetFocusPoint(interruptSender.transform);
         interruptSender.GetNiceInteraction(thisAgent.agentName);
     }
 
     public void SendMeanInteraction()
     {
+        //thisCharacter.SetFocusPoint(interruptSender.transform);
         interruptSender.GetMeanInteraction(thisAgent.agentName);
     }
 

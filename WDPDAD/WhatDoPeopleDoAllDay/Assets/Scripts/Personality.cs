@@ -6,7 +6,7 @@ using System;
 
 public class Personality : MonoBehaviour {
 
-
+    public Character character;
     
 
     [Header("Personality Values (please enter at least 2 decimal places)")]
@@ -14,7 +14,7 @@ public class Personality : MonoBehaviour {
     public float Concientiousness;
     public float Extroversion;
     public float Agreeableness;
-    public float NonNeuroticism;
+    public float Neuroticism;
     List<float> personalityVector = new List<float>();
 
 
@@ -23,8 +23,9 @@ public class Personality : MonoBehaviour {
     public AgentStateVarFloat energy, wealth, mood, temper, sociability, soberness, resources;
 
     [Header("Relationships")]
-    public List<Relationship> Relationships = new List<Relationship>();
-
+    public List<Relationship> AgentRelationships = new List<Relationship>();
+    //public List<AgentStateVarFloat> ghjsd = new List<AgentStateVarFloat>();
+    //private GameObject RelationshipsHolder;
 
 
     [Header("Global")]
@@ -66,6 +67,8 @@ public class Personality : MonoBehaviour {
         BuildPersonalityModifierInfluences();
         GenerateActionModifiers();
 
+        // for adding new relationships
+        //RelationshipsHolder = transform.Find("Relationships").gameObject;
 
 
         //Debug.Log(CheckWeight("timeofday"));
@@ -101,7 +104,7 @@ public class Personality : MonoBehaviour {
         float normC = NormaliseFloat(Concientiousness, 1.0f, -1.0f);
         float normE = NormaliseFloat(Extroversion, 1.0f, -1.0f);
         float normA = NormaliseFloat(Agreeableness, 1.0f, -1.0f);
-        float normN = NormaliseFloat(NonNeuroticism, 1.0f, -1.0f);
+        float normN = NormaliseFloat(Neuroticism, 1.0f, -1.0f);
 
 
 
@@ -377,7 +380,7 @@ public class Personality : MonoBehaviour {
         float cContrib = personalityModifierInfluences[1, varIndex] * Concientiousness;
         float eContrib = personalityModifierInfluences[2, varIndex] * Extroversion;
         float aContrib = personalityModifierInfluences[3, varIndex] * Agreeableness;
-        float nContrib = personalityModifierInfluences[4, varIndex] * NonNeuroticism;
+        float nContrib = personalityModifierInfluences[4, varIndex] * Neuroticism;
 
         // contribution from all of the personality values, 
         //the mean of the PCG distribution
@@ -402,17 +405,24 @@ public class Personality : MonoBehaviour {
     
     public AgentStateParameter GetRelationship(string name)
     {
-
-        foreach (Relationship relly in Relationships)
+        foreach (Relationship relly in AgentRelationships)
         {
             if (relly.nameOfPerson == name)
+            {
                 return relly.relationshipValue;
+            }    
         }
 
         //else, if relationship doesn't exist form a new one
 
         Relationship newRel = new Relationship(name, new AgentStateVarFloat());
-        Relationships.Add(newRel);
+
+        // @TODO attempts to add a new relationship as a gameobject, prob not worth it
+        //GameObject newRelationship = new GameObject();
+        //newRelationship.transform.parent = RelationshipsHolder.transform;
+        //Relationship riko = newRelationship.AddComponent<Relationship>();
+
+        AgentRelationships.Add(newRel);
 
         return newRel.relationshipValue;
     }
@@ -421,13 +431,13 @@ public class Personality : MonoBehaviour {
     public void ReceiveSocial(string name, bool mean)
     {
         // search for relationship based on name
-        foreach (Relationship rel in Relationships)
+        foreach (Relationship rel in AgentRelationships)
             if (rel.nameOfPerson == name)
             {
                 if (mean)
-                    GetComponent<Character>().ReceiveSocialiseMean(rel);
+                    character.ReceiveSocialiseMean(rel);
                 else
-                    GetComponent<Character>().ReceiveSocialiseNice(rel);
+                    character.ReceiveSocialiseNice(rel);
             }  
     }
 
@@ -687,7 +697,7 @@ public class Personality : MonoBehaviour {
         personalityVector.Add(Concientiousness);
         personalityVector.Add(Extroversion);
         personalityVector.Add(Agreeableness);
-        personalityVector.Add(NonNeuroticism);
+        personalityVector.Add(Neuroticism);
 
         string seedString1 = "";
         string seedString2 = "";

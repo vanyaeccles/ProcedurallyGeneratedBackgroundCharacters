@@ -6,14 +6,20 @@ using UnityEngine;
 [AddComponentMenu("UtilityAI/Agent")]
 public class Agent : MonoBehaviour
 {
-
+    [HideInInspector]
     public string agentName;
+
     public bool consoleLogging = false;
     
     public LinkedActionBehaviour linkedRootAction = new LinkedActionBehaviour();
 
     public LinkedActionBehaviour socialInteruption = new LinkedActionBehaviour();
 
+
+    public void Awake()
+    {
+        agentName = name;
+    }
 
 
     public void UpdateAI()
