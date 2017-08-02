@@ -291,7 +291,7 @@ public class ActionBehaviour : MonoBehaviour
 
         if (TopAction.isLeafAction)
         {
-            Debug.Log(TopAction);
+            //Debug.Log(TopAction);
             owner.SetTarget(TopAction.location);
         }
             

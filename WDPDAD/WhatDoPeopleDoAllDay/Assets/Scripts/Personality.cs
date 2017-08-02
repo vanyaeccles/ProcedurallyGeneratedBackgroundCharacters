@@ -122,7 +122,7 @@ public class Personality : MonoBehaviour {
 
         //Debug.Log(weight);
 
-        float contrib = oContrib + cContrib + eContrib + aContrib + nContrib;
+        //float contrib = oContrib + cContrib + eContrib + aContrib + nContrib;
 
         //Debug.Log("diff: " + contrib);
 

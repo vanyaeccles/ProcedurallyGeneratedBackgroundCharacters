@@ -15,6 +15,8 @@ public class Agent : MonoBehaviour
 
     public LinkedActionBehaviour socialInteruption = new LinkedActionBehaviour();
 
+    
+
 
     public void Awake()
     {

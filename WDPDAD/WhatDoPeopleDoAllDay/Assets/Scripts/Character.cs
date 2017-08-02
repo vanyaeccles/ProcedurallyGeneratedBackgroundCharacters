@@ -8,13 +8,13 @@ public class Character : MonoBehaviour
     
     //agent
     Agent agent;
-    public TextMesh voice, stats;
+    public TextMesh voice;
     // Simple Movement
     NavMeshAgent Walker;
     public Transform target;
     public Animation anim;
 
-
+    public Camera agentCamera;
 
 
     // The personality game object holds personality + state parameters
@@ -55,15 +55,6 @@ public class Character : MonoBehaviour
 
         Move();
 
-        // Show some stuff to UI
-        DisplayStats(" energy: " + energy.value.ToString("F0")
-            + "\n hunger: " + hunger.value.ToString("F0")
-            + "\n resources: " + resources.value.ToString("F0")
-            + "\n wealth: " + wealth.value.ToString("F0") 
-            + "\n mood: " + mood.value.ToString("F0") 
-            + "\n temper: " + temper.value.ToString("F0") 
-            + "\n sociability: " + sociability.value.ToString("F0")
-            + "\n soberness: " + soberness.value.ToString("F0"));
     }
 
 
@@ -119,12 +110,15 @@ public class Character : MonoBehaviour
 
     void Speak(string sentence)
     {
-        voice.text = sentence;
+        //voice.text = sentence;
     }
-    void DisplayStats(string sentence)
+
+
+    public List<AgentStateVarFloat> GetStats()
     {
-        stats.text = sentence;
+        return stateVector;
     }
+
 
     #endregion
 
@@ -292,18 +286,18 @@ public class Character : MonoBehaviour
         //@TODO finish this
         if (behaviourLog.Count <= 0)
         {
-            Debug.Log("First action: " + _action);
+            //Debug.Log("First action: " + _action);
             behaviourLog.Add(new AgentLog(_action));
         }
             
 
         if(_action != behaviourLog[behaviourLog.Count - 1].action)
         {
-            Debug.Log("Action: " + behaviourLog[behaviourLog.Count - 1].action + " ended");
+            //Debug.Log("Action: " + behaviourLog[behaviourLog.Count - 1].action + " ended");
 
             behaviourLog.Add(new AgentLog(_action));
 
-            Debug.Log("New action: " + behaviourLog[behaviourLog.Count - 1].action);
+            //Debug.Log("New action: " + behaviourLog[behaviourLog.Count - 1].action);
         }
             
 
