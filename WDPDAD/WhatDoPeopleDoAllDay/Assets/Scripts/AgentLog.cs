@@ -10,10 +10,26 @@ public class AgentLog {
 
     public string action;
 
-    public float duration = 0.0f;
 
-    public AgentLog(string _action)
+    public float startTime = 0.0f;
+    public float endTime = 0.0f;
+
+    public AgentLog(string _action, float _startTime)
     {
         action = _action;
+        startTime = _startTime;
+    }
+
+    public float EndTime
+    {
+        get
+        {
+            return endTime;
+        }
+        set
+        {
+            endTime = value;
+        }
+        
     }
 }

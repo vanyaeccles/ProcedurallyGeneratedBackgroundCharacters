@@ -101,6 +101,7 @@
     <Compile Include="Assets\Scripts\Relationship.cs" />
     <Compile Include="Assets\Scripts\SimpleAgent\NavAgent.cs" />
     <Compile Include="Assets\Scripts\UI\AgentInfoBoard.cs" />
+    <Compile Include="Assets\Scripts\UI\OnOffScript.cs" />
     <Compile Include="Assets\Scripts\UI\UIActivePanel.cs" />
     <Compile Include="Assets\Scripts\UI\UIAgentManager.cs" />
   </ItemGroup>

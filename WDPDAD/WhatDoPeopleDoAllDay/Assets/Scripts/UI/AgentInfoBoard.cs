@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// This is the script for controlling the info panel above agents 
+
 public class AgentInfoBoard : MonoBehaviour {
 
     // the camera it is following

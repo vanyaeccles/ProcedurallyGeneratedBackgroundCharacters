@@ -6,7 +6,7 @@ public class DayNightCycle : MonoBehaviour {
 
     public AgentStateVarFloat time;
 
-    float timeOfDay = 12.0f;
+    public float timeOfDay = 12.0f;
 
     public float angle = 0.0f;
 

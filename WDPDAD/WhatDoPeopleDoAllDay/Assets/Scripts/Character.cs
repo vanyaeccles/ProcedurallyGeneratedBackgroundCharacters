@@ -27,10 +27,13 @@ public class Character : MonoBehaviour
     //relationships, modelled as state parameters
     public AgentStateVarFloat Agent1;
 
+    public DayNightCycle clock;
+
 
 
     // logging of agent behaiour info
-    List<AgentLog> behaviourLog = new List<AgentLog>();
+    [HideInInspector]
+    public List<AgentLog> behaviourLog = new List<AgentLog>();
     
 
 
@@ -40,6 +43,7 @@ public class Character : MonoBehaviour
     {
         agent = GetComponent<Agent>();
         Walker = GetComponent<NavMeshAgent>();
+        clock = GameObject.Find("Sun").GetComponent<DayNightCycle>();
 
         ConstructStateVector();
 
@@ -283,26 +287,25 @@ public class Character : MonoBehaviour
 
     void LogAction(string _action)
     {
-        //@TODO finish this
+        // if its the first action, log it
         if (behaviourLog.Count <= 0)
         {
-            //Debug.Log("First action: " + _action);
-            behaviourLog.Add(new AgentLog(_action));
+            behaviourLog.Add(new AgentLog(_action, clock.timeOfDay));
         }
             
 
         if(_action != behaviourLog[behaviourLog.Count - 1].action)
         {
+            behaviourLog[behaviourLog.Count - 1].EndTime = clock.timeOfDay;
+
             //Debug.Log("Action: " + behaviourLog[behaviourLog.Count - 1].action + " ended");
 
-            behaviourLog.Add(new AgentLog(_action));
+            behaviourLog.Add(new AgentLog(_action, clock.timeOfDay));
 
             //Debug.Log("New action: " + behaviourLog[behaviourLog.Count - 1].action);
         }
             
 
-        behaviourLog[behaviourLog.Count - 1].duration += UtilityTime.time;
-        //Debug.Log("Current action time: " + behaviourLog[behaviourLog.Count - 1].duration);
     }
 
 
