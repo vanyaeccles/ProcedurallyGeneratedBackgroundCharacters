@@ -293,13 +293,14 @@ public class Character : MonoBehaviour
 
     public void ReceiveSocialiseNice(Relationship rel)
     {
+        //Debug.Log(rel.nameOfPerson + " is being nice to " + this.name);
         rel.relationshipValue.value += UtilityTime.time; //@TODO, fix amount
     } 
 
     public void ReceiveSocialiseMean(Relationship rel)
     {
-
-        rel.relationshipValue.value += UtilityTime.time; //@TODO, fix amount
+        //Debug.Log(rel.nameOfPerson + " is being mean to "  + this.name);
+        rel.relationshipValue.value -= UtilityTime.time; //@TODO, fix amount
     }
 
 

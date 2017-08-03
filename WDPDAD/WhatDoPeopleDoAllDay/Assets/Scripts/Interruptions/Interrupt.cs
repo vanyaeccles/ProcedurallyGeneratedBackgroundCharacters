@@ -16,6 +16,7 @@ public class Interrupt : MonoBehaviour {
     float socialUtilThreshold = 0.0f;
 
     Interrupt interruptSender;
+    Interrupt previousInterrupt;
 
 
 	
@@ -33,11 +34,19 @@ public class Interrupt : MonoBehaviour {
 
         if (social)
         {
+            // if its the last person the agent spoke to then ignore
+            if (sender == previousInterrupt)
+                return;
+
             bool acceptSocial = ProcessSocial(origin);
 
             if (acceptSocial)
             {
                 interruptSender = sender;
+                previousInterrupt = sender;
+
+                //Debug.Log("My name: " + name + " sender: " + sender.name);
+
 
                 // tell the sender to initialise social action 
                 sender.Socialise(this);
@@ -60,8 +69,8 @@ public class Interrupt : MonoBehaviour {
     // this method decides whether to proceed with the social interaction
     bool ProcessSocial(string origin)
     {
+        // get the relevant relationship parameter
         AgentStateParameter relationshipInQuestion = thisAgentPersonality.GetRelationship(origin);
-
         // set the relationship for consideration
         thisAgent.socialInteruption.action.considerations[0].agentStatePar = relationshipInQuestion;
 
@@ -117,10 +126,11 @@ public class Interrupt : MonoBehaviour {
 
             bool allowInterrupt = ProcessSocial(c.GetComponent<Interrupt>().name);
 
-
-
             if (allowInterrupt)
-                c.gameObject.GetComponent<Interrupt>().ReceiveInterrupt(c.gameObject.GetComponent<Interrupt>(), name, isSocial, isSeekingAssist);
+            {
+                c.gameObject.GetComponent<Interrupt>().ReceiveInterrupt(this, this.name, isSocial, isSeekingAssist);
+            }
+                
 
             //Debug.Log("interuption sent");
         }
@@ -154,12 +164,16 @@ public class Interrupt : MonoBehaviour {
 
     public void SendNiceInteraction()
     {
+        if (interruptSender == null)
+            return;
         //thisCharacter.SetFocusPoint(interruptSender.transform);
         interruptSender.GetNiceInteraction(thisAgent.agentName);
     }
 
     public void SendMeanInteraction()
     {
+        if (interruptSender == null)
+            return;
         //thisCharacter.SetFocusPoint(interruptSender.transform);
         interruptSender.GetMeanInteraction(thisAgent.agentName);
     }

@@ -24,7 +24,7 @@ public class Personality : MonoBehaviour {
 
     [Header("Relationships")]
     public List<Relationship> AgentRelationships = new List<Relationship>();
-    //public List<AgentStateVarFloat> ghjsd = new List<AgentStateVarFloat>();
+    public List<AgentStateVarFloat> AgentRelationshipValues = new List<AgentStateVarFloat>();
     //private GameObject RelationshipsHolder;
 
     [Header("Global")]
@@ -402,11 +402,11 @@ public class Personality : MonoBehaviour {
 
     #region SOCIAL STUFF
     
-    public AgentStateParameter GetRelationship(string name)
+    public AgentStateParameter GetRelationship(string _name)
     {
         foreach (Relationship relly in AgentRelationships)
         {
-            if (relly.nameOfPerson == name)
+            if (relly.nameOfPerson == _name)
             {
                 return relly.relationshipValue;
             }    
@@ -414,30 +414,32 @@ public class Personality : MonoBehaviour {
 
         //else, if relationship doesn't exist form a new one
 
-        Relationship newRel = new Relationship(name, new AgentStateVarFloat());
+        AgentStateVarFloat newRelValue = new AgentStateVarFloat();
 
-        // @TODO attempts to add a new relationship as a gameobject, prob not worth it
-        //GameObject newRelationship = new GameObject();
-        //newRelationship.transform.parent = RelationshipsHolder.transform;
-        //Relationship riko = newRelationship.AddComponent<Relationship>();
+        Relationship newRel = new Relationship(_name, newRelValue);
 
         AgentRelationships.Add(newRel);
+        AgentRelationshipValues.Add(newRelValue);
+
+        //Debug.Log(newRelValue.value);
 
         return newRel.relationshipValue;
     }
 
 
-    public void ReceiveSocial(string name, bool mean)
+    public void ReceiveSocial(string _name, bool mean)
     {
         // search for relationship based on name
         foreach (Relationship rel in AgentRelationships)
-            if (rel.nameOfPerson == name)
+        {
+            if (rel.nameOfPerson == _name)
             {
                 if (mean)
                     character.ReceiveSocialiseMean(rel);
                 else
                     character.ReceiveSocialiseNice(rel);
-            }  
+            }
+        }
     }
 
 

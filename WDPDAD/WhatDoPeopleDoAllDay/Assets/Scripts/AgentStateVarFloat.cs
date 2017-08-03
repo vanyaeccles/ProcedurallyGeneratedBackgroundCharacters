@@ -39,4 +39,10 @@ public class AgentStateVarFloat : AgentStateParameter
             normValue = (currentValue - minValue) / (maxValue - minValue);
         }
     }
+
+
+    public AgentStateVarFloat()
+    {
+        currentValue = startValue;
+    }
 }
