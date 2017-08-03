@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class UIActivePanel : MonoBehaviour {
 
+    private DayNightCycle clock;
 
     public Character activeCharacter;
 
@@ -12,6 +13,7 @@ public class UIActivePanel : MonoBehaviour {
     public Text AgentName;
     public Text StateText;
     public Text HistoryText;
+    public Text ActionText;
 
 
     public bool isDisplayingAgentHistory = false;
@@ -22,11 +24,11 @@ public class UIActivePanel : MonoBehaviour {
     public GameObject StatePanel;
     public GameObject ActionPanel;
 
-    // Use this for initialization
-    void Start ()
+    public void Awake()
     {
-		
-	}
+        clock = GameObject.Find("Sun").GetComponent<DayNightCycle>();
+    }
+
 	
 	// Update is called once per frame
 	void Update ()
@@ -57,9 +59,8 @@ public class UIActivePanel : MonoBehaviour {
 
         if (isDisplayingAgentAction)
         {
-
+            SetAction();
         }
-
     }
 
 
@@ -67,9 +68,10 @@ public class UIActivePanel : MonoBehaviour {
 
     void SetName(string name)
     {
-        AgentName.text = "Name: " + name;
+        AgentName.text = "Name: " + name + "\n" + "Current Time: " + clock.timeOfDay.ToString("F0");
     }
 
+    // displays the agent state in the state panel
     void SetState(List<AgentStateVarFloat> stateVector)
     {
         StateText.text = (" Energy: " + stateVector[0].value.ToString("F0")
@@ -80,8 +82,15 @@ public class UIActivePanel : MonoBehaviour {
             + "\n Temper: " + stateVector[5].value.ToString("F0")
             + "\n Sociability: " + stateVector[6].value.ToString("F0")
             + "\n Soberness: " + stateVector[7].value.ToString("F0"));
+
+        StateText.text += "\n\n Relationships:  \n \n";
+
+        foreach (Relationship rel in activeCharacter.personality.AgentRelationships)
+            StateText.text += "  " + rel.nameOfPerson + " " + rel.relationshipValue.value.ToString("F0") + "\n";
     }
 
+
+    // displays the agent history in the history panel
     void SetHistory()
     {   // @TODO could maybe be optimised
         HistoryText.text =  "  Action         StartTime         EndTime \n";
@@ -92,6 +101,13 @@ public class UIActivePanel : MonoBehaviour {
         }
     }
 
+    void SetAction()
+    {
+        ActionText.text = "";
+
+        foreach (string i in activeCharacter.runningActions)
+            ActionText.text += i + "\n";
+    }
 
 
 

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// for setting agent + camera via UI buttons
+
 public class UIAgentManager : MonoBehaviour {
 
 

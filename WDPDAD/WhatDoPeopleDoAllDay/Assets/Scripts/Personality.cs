@@ -27,7 +27,6 @@ public class Personality : MonoBehaviour {
     //public List<AgentStateVarFloat> ghjsd = new List<AgentStateVarFloat>();
     //private GameObject RelationshipsHolder;
 
-
     [Header("Global")]
     public AgentStateParameter timeofday;
 
@@ -46,7 +45,7 @@ public class Personality : MonoBehaviour {
     // the dictionary thats used to execute effect of behaviours
     public Dictionary<string, List<float>> actionModifierDictionary = new Dictionary<string, List<float>>();
 
-
+    // PCG variables
     private PRNG prng;
     int seed1, seed2;
     List<double> randModifiers = new List<double>();

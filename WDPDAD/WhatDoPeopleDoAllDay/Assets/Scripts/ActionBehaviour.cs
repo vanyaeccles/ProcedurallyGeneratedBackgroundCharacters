@@ -87,18 +87,20 @@ public class ActionBehaviour : MonoBehaviour
         {   // evaluate + choose a child action
             EvaluateChildActions();
             actionTimer = TopAction.time;
-        }
-        else
-        {
-            //Begin timing the action
 
-            //StartTimer();
+
+
+
+            if (topAction.isLeafAction)
+                owner.LogActionBegin(topAction);
         }
 
 
 
         //This is where the child actions are simultaneously told to perform their own evaluations
         topAction.UpdateAction();
+
+
 
         if(isConsoleLogging)
             Debug.Log(topAction + " running");
@@ -116,8 +118,13 @@ public class ActionBehaviour : MonoBehaviour
         if (actionTimer <= 0.0f) 
         { // action ended
 
+            if (topAction.isLeafAction)
+                owner.LogActionEnd();
+
+
             if(isConsoleLogging)
                 Debug.Log(TopAction.name + " action ended");
+
 
             topAction = null;
 
@@ -165,14 +172,14 @@ public class ActionBehaviour : MonoBehaviour
         }
 
         if (topAction != previousAction)
+        {
             newAction = true;
-        else
-            //StartTimer();
-
+        }
         
 
         if (isConsoleLogging)
             Debug.Log(name + ". New topAction: " + topAction.name + ". With actionScore: " + topActionScore);
+
 
         currentActionScore = topActionScore;
         return topActionScore;
@@ -285,43 +292,31 @@ public class ActionBehaviour : MonoBehaviour
     {
         //Debug.Log("Executing: " + name);
 
+
+
         if (isLeafAction)
             return;
 
 
         if (TopAction.isLeafAction)
         {
-            //Debug.Log(TopAction);
+            // set the target for navigation
             owner.SetTarget(TopAction.location);
         }
             
 
-        
-
-
-        if(isConsoleLogging)
-        {
-            //Debug.Log("Current position: " + transform.position);
-            //Debug.Log("Target: " + GetTopAction().name);
-            //Debug.Log("Target position: " + GetTopAction().location.transform.position);
-            //Debug.Log("Distance: " + Vector3.Distance(owner.transform.position, GetTopAction().location.transform.position));
-        }
-
-
-        //checks position + begins performing action
+        //checks position + begins performing action if close enough
         float distance2target = Vector3.Distance(owner.transform.position, TopAction.location.transform.position);
         if (distance2target <= Distance2DestinationThresh)
         {
-            //Debug.Log("Performing action " + GetTopAction().name);
-
-
             StartTimer();
 
             //Performs the action as specified in Character.cs, updates the agent parameters etc as specified
             if (TopAction.isLeafAction)
             {
+                // run the delegate
                 TopAction.handle();
-                TopAction.ExecuteBehaviour();
+                //TopAction.ExecuteBehaviour();
             }   
         }
     }
@@ -349,6 +344,7 @@ public class ActionBehaviour : MonoBehaviour
         }
         return null;
     }
+
 
     #endregion
 

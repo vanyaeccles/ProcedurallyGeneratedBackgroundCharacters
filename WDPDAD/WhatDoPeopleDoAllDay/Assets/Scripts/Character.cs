@@ -30,11 +30,11 @@ public class Character : MonoBehaviour
     public DayNightCycle clock;
 
 
-
     // logging of agent behaiour info
     [HideInInspector]
     public List<AgentLog> behaviourLog = new List<AgentLog>();
-    
+    // the currently running actions
+    public List<string> runningActions = new List<string>();
 
 
 
@@ -48,6 +48,7 @@ public class Character : MonoBehaviour
         ConstructStateVector();
 
         SetActionDelegates();
+
     }
 
 
@@ -58,7 +59,6 @@ public class Character : MonoBehaviour
         agent.UpdateAI();
 
         Move();
-
     }
 
 
@@ -127,6 +127,44 @@ public class Character : MonoBehaviour
     #endregion
 
 
+
+
+
+    #region AGENT LOG
+
+    public void LogActionBegin(ActionBehaviour _action)
+    {
+        float currentTime = clock.timeOfDay;
+        behaviourLog.Add(new AgentLog(_action.name, currentTime));
+
+        // run this once to get the action decision hierarchy
+        GetRunningActions();
+    }
+
+    public void LogActionEnd()
+    {
+        float currentTime = clock.timeOfDay;
+        behaviourLog[behaviourLog.Count - 1].EndTime = currentTime;
+    }
+
+    // this is for providing a list of currently running actions through the hierarchy
+    public void GetRunningActions()
+    {
+        runningActions.Clear();
+
+        ActionBehaviour runningAction = agent.linkedRootAction.action;
+        // do a quick pass down the hierarchy
+        while(!runningAction.isLeafAction)
+        {
+            runningActions.Add(runningAction.name);
+            runningAction = runningAction.TopAction;
+        }
+
+        // add the running leaf action
+        runningActions.Add(behaviourLog[behaviourLog.Count - 1].action);
+    }
+
+    #endregion
 
 
 
@@ -279,34 +317,9 @@ public class Character : MonoBehaviour
 
             stateVector[i].value += stateModifier * UtilityTime.time;
         }
-
-
-        // logging behaviour info
-        LogAction(action);
     }
 
-    void LogAction(string _action)
-    {
-        // if its the first action, log it
-        if (behaviourLog.Count <= 0)
-        {
-            behaviourLog.Add(new AgentLog(_action, clock.timeOfDay));
-        }
-            
 
-        if(_action != behaviourLog[behaviourLog.Count - 1].action)
-        {
-            behaviourLog[behaviourLog.Count - 1].EndTime = clock.timeOfDay;
-
-            //Debug.Log("Action: " + behaviourLog[behaviourLog.Count - 1].action + " ended");
-
-            behaviourLog.Add(new AgentLog(_action, clock.timeOfDay));
-
-            //Debug.Log("New action: " + behaviourLog[behaviourLog.Count - 1].action);
-        }
-            
-
-    }
 
 
     void SetActionDelegates()
