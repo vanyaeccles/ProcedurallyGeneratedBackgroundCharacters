@@ -11,9 +11,9 @@ public class Agent : MonoBehaviour
 
     public bool consoleLogging = false;
     
-    public LinkedActionBehaviour linkedRootAction = new LinkedActionBehaviour();
+    public LinkedActionBehaviour linkedRootAction;
 
-    public LinkedActionBehaviour socialInteruption = new LinkedActionBehaviour();
+    public LinkedActionBehaviour socialInteruption;
 
     
 
@@ -23,6 +23,20 @@ public class Agent : MonoBehaviour
         agentName = name;
     }
 
+    public void SetSocialInterruption()
+    {
+        //link up the social interruption action
+        foreach (LinkedActionBehaviour action in linkedRootAction.action.linkedChildActions)
+        {
+            if (action.action.name == "Socialise")
+                socialInteruption = action;
+        }
+    }
+
+    public void SetRootAction(ActionBehaviour arg)
+    {
+        linkedRootAction.action = arg;
+    }
 
     public void UpdateAI()
     {

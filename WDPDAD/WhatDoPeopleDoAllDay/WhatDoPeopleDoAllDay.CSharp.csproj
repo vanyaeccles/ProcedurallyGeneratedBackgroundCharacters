@@ -95,11 +95,15 @@
     <Compile Include="Assets\Scripts\Global\UtilityTime.cs" />
     <Compile Include="Assets\Scripts\Interruptions\Interrupt.cs" />
     <Compile Include="Assets\Scripts\LinkedActionBehaviour.cs" />
+    <Compile Include="Assets\Scripts\Occupation.cs" />
+    <Compile Include="Assets\Scripts\PCG\AgentKernel.cs" />
     <Compile Include="Assets\Scripts\PCG\PRNG.cs" />
+    <Compile Include="Assets\Scripts\PCG\Town.cs" />
     <Compile Include="Assets\Scripts\Personality.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Relationship.cs" />
     <Compile Include="Assets\Scripts\SimpleAgent\NavAgent.cs" />
+    <Compile Include="Assets\Scripts\TownInfo.cs" />
     <Compile Include="Assets\Scripts\UI\AgentInfoBoard.cs" />
     <Compile Include="Assets\Scripts\UI\OnOffScript.cs" />
     <Compile Include="Assets\Scripts\UI\UIActivePanel.cs" />

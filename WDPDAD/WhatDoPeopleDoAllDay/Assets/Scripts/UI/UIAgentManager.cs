@@ -39,6 +39,10 @@ public class UIAgentManager : MonoBehaviour {
     {
         SetActiveAgent(defaultAgent);
         currentCharacter = defaultAgent.GetComponent<Character>();
+
+
+        // start with the player's camera
+        SetCamera("player");
     }
 
 	
@@ -76,7 +80,8 @@ public class UIAgentManager : MonoBehaviour {
     {
         //add the main (player) camera
         cameras.Add(playerCam);
-        
+        agentCams.Add("player", playerCam);
+
 
         //add the camera
         foreach (Character _char in characters)
@@ -85,12 +90,10 @@ public class UIAgentManager : MonoBehaviour {
             // add each agent/camera pair to dictionary
             agentCams.Add(_char.name, _char.agentCamera);
         }
-
-        SetCamera("Q'an");
     }
 
     // called when selecting agents to follow with camera
-    void SetCamera(string name)
+    public void SetCamera(string name)
     {
         // disable all cams
         foreach(Camera cam in cameras)

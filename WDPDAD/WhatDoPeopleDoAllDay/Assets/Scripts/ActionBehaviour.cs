@@ -18,6 +18,8 @@ public class ActionBehaviour : MonoBehaviour
     //public int priorityLevel;
     public bool isInterruptible;
     public bool isConsoleLogging;
+    public bool isSelfAction;
+    public bool isHomeAction;
 
     public int historyStates = 10;
     public float secondsBetweenEvaluations = 0.0f;
@@ -51,7 +53,8 @@ public class ActionBehaviour : MonoBehaviour
     public Transform location;
 
 
-    public void Awake()
+    // this function must be called when creating an agent
+    public void StartAwake()
     {
         owner = FindOwner(this.gameObject);
 
@@ -61,9 +64,20 @@ public class ActionBehaviour : MonoBehaviour
             considerations[i].owner = this.owner;
             considerations[i].SetWeight();
         }
+
+        GetLocation();
     }
 
-    
+    // get the location from the character
+    void GetLocation()
+    {
+        // if its a 'self action' then can be performed at the agents current location
+        if (isSelfAction)
+            location = owner.transform;
+
+        if (isHomeAction)
+            location = owner.homeLocation;
+    }
 
 
     public void UpdateAction()

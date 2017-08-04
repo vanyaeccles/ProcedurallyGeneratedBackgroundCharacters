@@ -5,9 +5,16 @@ using UnityEngine.AI;
 
 public class Character : MonoBehaviour
 {
-    
+    //non-collapsable items, must be set when building the agent
+    public Transform homeLocation; // their house
+    public Occupation occupation; // their job
+    public Personality personality; // The personality game object holds personality + state parameters
+
+
+
+
     //agent
-    Agent agent;
+    public Agent thisAgent;
     public TextMesh voice;
     // Simple Movement
     NavMeshAgent Walker;
@@ -17,17 +24,15 @@ public class Character : MonoBehaviour
     public Camera agentCamera;
 
 
-    // The personality game object holds personality + state parameters
-    public Personality personality;
 
     private AgentStateVarFloat energy, hunger, wealth, mood, temper, sociability, soberness, resources;
     // Vector that holds the agent's state
     List<AgentStateVarFloat> stateVector = new List<AgentStateVarFloat>();
 
-    //relationships, modelled as state parameters
-    public AgentStateVarFloat Agent1;
 
     public DayNightCycle clock;
+    private TownInfo towninfo;
+    
 
 
     // logging of agent behaiour info
@@ -36,33 +41,63 @@ public class Character : MonoBehaviour
     // the currently running actions
     public List<string> runningActions = new List<string>();
 
+    // for holding all the locations
+    public Dictionary<string, Transform> locationDictionary = new Dictionary<string, Transform>();
 
 
+    void Awake()
+    {
+        thisAgent = GetComponent<Agent>();
+        Walker = GetComponent<NavMeshAgent>();
+
+        clock = GameObject.Find("Sun").GetComponent<DayNightCycle>();
+        towninfo = GameObject.Find("Town").GetComponent<TownInfo>();
+
+        ConstructStateVector();
+    }
 
     void Start()
     {
-        agent = GetComponent<Agent>();
-        Walker = GetComponent<NavMeshAgent>();
-        clock = GameObject.Find("Sun").GetComponent<DayNightCycle>();
-
-        ConstructStateVector();
-
         SetActionDelegates();
-
     }
 
+
+    public void ActivateAgent(ActionBehaviour _action)
+    {
+        //Debug.Log("activating agent");
+
+        thisAgent.SetRootAction(_action);
+
+        thisAgent.SetSocialInterruption();
+    }
 
     // Update is called once per frame
     void Update()
     {
         // Perform utility decision making and behaviour
-        agent.UpdateAI();
+        thisAgent.UpdateAI();
 
         Move();
     }
 
 
+    void BuildLocationDictionary()
+    {
+        //locationDictionary.Clear();
 
+        //locationDictionary.Add("BuyFoodAtMarket", towninfo.marketLocation);
+        //locationDictionary.Add("EatFoodAtHome", homeLocation);
+        //locationDictionary.Add("StealFood", towninfo.marketStealLocation);
+
+        //locationDictionary.Add("SleepAtHome", homeLocation);
+
+        //locationDictionary.Add("DrinkAtTavern", towninfo.tavernLocation);
+        //locationDictionary.Add("DrinkAmicably", towninfo.tavernDrink1Location);
+        //locationDictionary.Add("DrinkBelligerently", towninfo.tavernDrink2Location);
+
+        //locationDictionary.Add("DrinkBelligerently", towninfo.tavernDrink2Location);
+        //locationDictionary.Add("DrinkBelligerently", towninfo.tavernDrink2Location);
+    }
 
 
 
@@ -152,7 +187,7 @@ public class Character : MonoBehaviour
     {
         runningActions.Clear();
 
-        ActionBehaviour runningAction = agent.linkedRootAction.action;
+        ActionBehaviour runningAction = thisAgent.linkedRootAction.action;
         // do a quick pass down the hierarchy
         while(!runningAction.isLeafAction)
         {
@@ -326,21 +361,21 @@ public class Character : MonoBehaviour
     void SetActionDelegates()
     {
         //add function delegate to action
-        agent.SetVoidActionDelegate("BuyFoodAtMarket", BuyFoodAtMarket);
-        agent.SetVoidActionDelegate("EatFoodAtHome", EatFoodAtHome);
-        agent.SetVoidActionDelegate("StealFood", StealFood);
-        agent.SetVoidActionDelegate("SleepAtHome", SleepAtHome);
-        agent.SetVoidActionDelegate("SleepOnTheSpot", SleepOnTheSpot);
-        agent.SetVoidActionDelegate("DrinkBelligerently", DrinkBelligerently);
-        agent.SetVoidActionDelegate("DrinkAmicably", DrinkAmicably);
-        agent.SetVoidActionDelegate("PrayAtChurch", PrayAtChurch);
-        agent.SetVoidActionDelegate("GoFishing", GoFishing);
-        agent.SetVoidActionDelegate("WorkDiligently", WorkDiligently);
-        agent.SetVoidActionDelegate("SleepOnTheJob", SleepOnTheJob);
-        agent.SetVoidActionDelegate("SellWares", SellWares);
-        agent.SetVoidActionDelegate("Socialise", Socialise);
-        agent.SetVoidActionDelegate("SocialiseNice", SocialiseNice);
-        agent.SetVoidActionDelegate("SocialiseMean", SocialiseMean);
+        thisAgent.SetVoidActionDelegate("BuyFoodAtMarket", BuyFoodAtMarket);
+        thisAgent.SetVoidActionDelegate("EatFoodAtHome", EatFoodAtHome);
+        thisAgent.SetVoidActionDelegate("StealFood", StealFood);
+        thisAgent.SetVoidActionDelegate("SleepAtHome", SleepAtHome);
+        thisAgent.SetVoidActionDelegate("SleepOnTheSpot", SleepOnTheSpot);
+        thisAgent.SetVoidActionDelegate("DrinkBelligerently", DrinkBelligerently);
+        thisAgent.SetVoidActionDelegate("DrinkAmicably", DrinkAmicably);
+        thisAgent.SetVoidActionDelegate("PrayAtChurch", PrayAtChurch);
+        thisAgent.SetVoidActionDelegate("GoFishing", GoFishing);
+        thisAgent.SetVoidActionDelegate("WorkDiligently", WorkDiligently);
+        thisAgent.SetVoidActionDelegate("SleepOnTheJob", SleepOnTheJob);
+        thisAgent.SetVoidActionDelegate("SellWares", SellWares);
+        thisAgent.SetVoidActionDelegate("Socialise", Socialise);
+        thisAgent.SetVoidActionDelegate("SocialiseNice", SocialiseNice);
+        thisAgent.SetVoidActionDelegate("SocialiseMean", SocialiseMean);
     }
 
     #endregion
