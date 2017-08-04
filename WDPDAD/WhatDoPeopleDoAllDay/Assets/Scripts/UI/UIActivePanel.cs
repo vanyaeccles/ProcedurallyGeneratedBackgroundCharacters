@@ -74,14 +74,26 @@ public class UIActivePanel : MonoBehaviour {
     // displays the agent state in the state panel
     void SetState(List<AgentStateVarFloat> stateVector)
     {
-        StateText.text = (" Energy: " + stateVector[0].value.ToString("F0")
-            + "\n Hunger: " + stateVector[1].value.ToString("F0")
-            + "\n Resources: " + stateVector[2].value.ToString("F0")
-            + "\n Wealth: " + stateVector[3].value.ToString("F0")
-            + "\n Mood: " + stateVector[4].value.ToString("F0")
-            + "\n Temper: " + stateVector[5].value.ToString("F0")
-            + "\n Sociability: " + stateVector[6].value.ToString("F0")
-            + "\n Soberness: " + stateVector[7].value.ToString("F0"));
+        StateText.text = "Parameter               Weight";
+
+        StateText.text += ("\n Energy: " + stateVector[0].value.ToString("F0") + "          " + activeCharacter.personality.CheckWeight("energy")
+            + "\n Hunger: " + stateVector[1].value.ToString("F0") + "          " + activeCharacter.personality.CheckWeight("hunger")
+            + "\n Resources: " + stateVector[2].value.ToString("F0") + "          " + activeCharacter.personality.CheckWeight("resources")
+            + "\n Wealth: " + stateVector[3].value.ToString("F0") + "          " + activeCharacter.personality.CheckWeight("wealth")
+            + "\n Mood: " + stateVector[4].value.ToString("F0") + "          " + activeCharacter.personality.CheckWeight("mood")
+            + "\n Temper: " + stateVector[5].value.ToString("F0") + "          " + activeCharacter.personality.CheckWeight("temper")
+            + "\n Sociability: " + stateVector[6].value.ToString("F0") + "          " + activeCharacter.personality.CheckWeight("sociability")
+            + "\n Soberness: " + stateVector[7].value.ToString("F0") + "          " + activeCharacter.personality.CheckWeight("soberness"));
+
+        StateText.text += "\n \n Personality: ";
+
+        StateText.text += ("\n \n Openess: " + activeCharacter.personality.OpennessToExperience
+            + "\n Concientiousness: " + activeCharacter.personality.Concientiousness
+            + "\n Extroversion: " + activeCharacter.personality.Extroversion
+            + "\n Agreeableness: " + activeCharacter.personality.Agreeableness
+            + "\n Neuroticism: " + activeCharacter.personality.Neuroticism
+            );
+
 
         StateText.text += "\n\n Relationships:  \n \n";
 
