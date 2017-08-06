@@ -66,7 +66,9 @@ public class ActionBehaviour : MonoBehaviour
         }
 
         GetLocation();
+
     }
+
 
     // get the location from the character
     void GetLocation()

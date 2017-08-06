@@ -4,6 +4,18 @@ using UnityEngine;
 
 public class AgentKernel : MonoBehaviour {
 
+
+    public string Name;
+
+
+    public Transform homeLocation;
+
+
+    public OccupationType occupation;
+
+
+
+
     //[Header("Personality Values (please enter at least 2 decimal places)")]
     public float OpennessToExperience;
     public float Concientiousness;
@@ -12,10 +24,5 @@ public class AgentKernel : MonoBehaviour {
     public float Neuroticism;
 
 
-    public Transform homeLocation;
-
-    public OccupationType occupation;
-
-   
-
+    
 }

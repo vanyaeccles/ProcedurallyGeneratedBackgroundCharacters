@@ -5,6 +5,9 @@ using System;
 
 // adapted from http://paulbourke.net/miscellaneous/random/randomlib.c
 
+// maybe make this a global script? @TODO
+
+
 public class PRNG : MonoBehaviour {
 
 

@@ -14,7 +14,7 @@ public class Town : MonoBehaviour
     // the list of compressed agent 'kernel's
     public List<AgentKernel> compressedAgents = new List<AgentKernel>();
 
-
+    
 
 
     // expanded agent stuff
@@ -33,61 +33,113 @@ public class Town : MonoBehaviour
 
     public GameObject townExistAction;
 
+    [Header("Occupations")]
+    public GameObject Blacksmithing;
+    public GameObject Farming;
+    public GameObject Woodcutting;
+    public GameObject GuardDuty;
+    public GameObject Hunting;
+    Dictionary<OccupationType, GameObject> occupationDictionary = new Dictionary<OccupationType, GameObject>();
+
     bool single = false;
 
+
+
     // Use this for initialization
-    void Start () {
-		
+    void Start ()
+    {
+        // the occupations
+        BuildOccupationDictionary();
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
+
+
+
+
+        // spawns a single agent
         if (Input.GetKey("b") && !single)
         {
             single = true;
 
             //print("agent instantiated");
 
-            townAgents.Add(Instantiate(baseAgent, startLocation.position, Quaternion.identity));
 
+            // get the compressed agent
+            AgentKernel agentKernel = compressedAgents[compressedAgents.Count - 1];
 
+            // instantiate the agent
+            townAgents.Add(Instantiate(baseAgent, agentKernel.homeLocation.position, Quaternion.identity));
+
+            
             GameObject newAgent = townAgents[townAgents.Count - 1];
             newAgent.SetActive(true);
 
-            // set the name
-            newAgent.name = "AliveBoy";
 
-
+            // build the agent character
             Character newAgentCharacter = newAgent.GetComponent<Character>();
 
+            // build the agent from the given kernel
+            newAgentCharacter.name = agentKernel.Name;
+            newAgentCharacter.homeLocation = agentKernel.homeLocation;
 
 
-            //set the home
-            newAgentCharacter.homeLocation = startLocation;
+
 
             //set the occupation
             //newAgentCharacter.occupation = OccupationType.1;
+
+
 
             //set the action hierarchy
             // make an instance of the gameobject, set it as a child of the new agent
             GameObject newActions = Instantiate(baseAction, newAgent.transform.position, Quaternion.identity);
             newActions.SetActive(true);
-
-
             newActions.transform.parent = newAgent.transform;
 
-            // get the actions to run their StartAwake function
-            newActions.BroadcastMessage("StartAwake");
 
+            // give the agent its base 'exist' action, 
             tempRootaction = newActions.GetComponent<ActionBehaviour>();
 
-            newAgentCharacter.ActivateAgent(tempRootaction);
+            // get + instantiate the object for the agent's occupation
+            GameObject occupationObject = Instantiate(occupationDictionary[agentKernel.occupation], newActions.transform.position, Quaternion.identity);
 
+            foreach (LinkedActionBehaviour childAction in tempRootaction.linkedChildActions)
+                if (childAction.action.name == "Work")
+                {
+                    occupationObject.SetActive(true);
+
+                    childAction.action.linkedChildActions.Add(occupationObject.GetComponent<LinkedActionBehaviour>());
+
+                    //set the parent object in the hierarchy
+                    occupationObject.transform.parent = childAction.transform;
+                }
+                    
+
+
+            // and build the personality 
+            newAgentCharacter.ActivateAgent(tempRootaction, agentKernel.OpennessToExperience, agentKernel.Concientiousness, agentKernel.Extroversion, agentKernel.Agreeableness, agentKernel.Neuroticism);
+
+
+
+            // get the actions to run their StartAwake function, gives all actions their location and owner
+            newActions.BroadcastMessage("StartAwake");
         }
             
     }
 
+
+
+    void BuildOccupationDictionary()
+    {
+        occupationDictionary.Add(OccupationType.Blacksmithing, Blacksmithing);
+        occupationDictionary.Add(OccupationType.Farming, Farming);
+        occupationDictionary.Add(OccupationType.Woodcutting, Woodcutting);
+        occupationDictionary.Add(OccupationType.GuardDuty, GuardDuty);
+        occupationDictionary.Add(OccupationType.Hunting, Hunting);
+    }
 
 
     #region LOD Physics checking
@@ -108,12 +160,15 @@ public class Town : MonoBehaviour
 }
 
 
+
+
+
 // the types of job that agents can have
 public enum OccupationType
 {
-    BLACKSMITH, 
-    FARMER,
-    WOODCUTTER,
-    GUARD,
-    HUNTER
+    Blacksmithing, 
+    Farming,
+    Woodcutting,
+    GuardDuty,
+    Hunting
 }

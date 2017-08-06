@@ -47,57 +47,45 @@ public class Character : MonoBehaviour
 
     void Awake()
     {
+        // set up agent and navmesh agent
         thisAgent = GetComponent<Agent>();
         Walker = GetComponent<NavMeshAgent>();
-
+        // get the important external objects
         clock = GameObject.Find("Sun").GetComponent<DayNightCycle>();
         towninfo = GameObject.Find("Town").GetComponent<TownInfo>();
 
         ConstructStateVector();
     }
 
-    void Start()
+
+
+    public void ActivateAgent(ActionBehaviour _action, float O, float C, float E, float A, float N)
     {
+        //Debug.Log("activating agent");
+
+        // set the actions
+        thisAgent.SetRootAction(_action);
+        thisAgent.SetSocialInterruption();
+
+        // build the agent's personality 
+        personality.GeneratePersonality(O, C, E, A, N);
+
+
+        // create the action delegates
         SetActionDelegates();
     }
 
 
-    public void ActivateAgent(ActionBehaviour _action)
-    {
-        //Debug.Log("activating agent");
 
-        thisAgent.SetRootAction(_action);
-
-        thisAgent.SetSocialInterruption();
-    }
-
-    // Update is called once per frame
     void Update()
     {
         // Perform utility decision making and behaviour
         thisAgent.UpdateAI();
 
+        // use animations and navigations
         Move();
     }
 
-
-    void BuildLocationDictionary()
-    {
-        //locationDictionary.Clear();
-
-        //locationDictionary.Add("BuyFoodAtMarket", towninfo.marketLocation);
-        //locationDictionary.Add("EatFoodAtHome", homeLocation);
-        //locationDictionary.Add("StealFood", towninfo.marketStealLocation);
-
-        //locationDictionary.Add("SleepAtHome", homeLocation);
-
-        //locationDictionary.Add("DrinkAtTavern", towninfo.tavernLocation);
-        //locationDictionary.Add("DrinkAmicably", towninfo.tavernDrink1Location);
-        //locationDictionary.Add("DrinkBelligerently", towninfo.tavernDrink2Location);
-
-        //locationDictionary.Add("DrinkBelligerently", towninfo.tavernDrink2Location);
-        //locationDictionary.Add("DrinkBelligerently", towninfo.tavernDrink2Location);
-    }
 
 
 
@@ -340,11 +328,13 @@ public class Character : MonoBehaviour
 
 
 
+
     void PerformAction(string action)
     {
         //get the action, get the modification vector which will be stored by the agent (ie sign of effect and magnitude for all state variables)
 
-        List<float> actionModificationVector = personality.actionModifierDictionary[action];
+        // get the list from the global agent info @TODO maybe fix this
+        List<float> actionModificationVector = personality.globalAgentInfo.actionModifierDictionary[action];
 
         // For each of the state parameters, perform the operation specified in that action's modification vector
         for (int i = 0; i < stateVector.Count; i++)
@@ -383,7 +373,7 @@ public class Character : MonoBehaviour
 
 
   
-
+    // for modification whe performing actions
     void ConstructStateVector()
     {
         hunger = personality.hunger;
