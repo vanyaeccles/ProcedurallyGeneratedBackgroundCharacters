@@ -7,6 +7,9 @@ using System.Collections.Generic;
 [AddComponentMenu("UtilityAI/Action")]
 public class ActionBehaviour : MonoBehaviour
 {
+    public bool isActionEnabled = true;
+
+
     // Parent Action fields
     public bool isRootAction = false;
     public bool isLeafAction = false;
@@ -43,7 +46,7 @@ public class ActionBehaviour : MonoBehaviour
     //appropriate weighted considerations
     public List<ActionConsideration> considerations = new List<ActionConsideration>();
     //child actions
-    public List<LinkedActionBehaviour> linkedChildActions = new List<LinkedActionBehaviour>();
+    public List<ActionBehaviour> linkedChildActions = new List<ActionBehaviour>();
 
 
 
@@ -173,15 +176,15 @@ public class ActionBehaviour : MonoBehaviour
             if (linkedChildActions[i].isActionEnabled == true)
             {
                 
-                linkedChildActions[i].action.EvaluateActionUtil();
+                linkedChildActions[i].EvaluateActionUtil();
 
                 if (isConsoleLogging)
-                    Debug.Log("Evaluating " + linkedChildActions[i].action.GetName() + " Score: " + linkedChildActions[i].action.GetActionScore());
+                    Debug.Log("Evaluating " + linkedChildActions[i].GetName() + " Score: " + linkedChildActions[i].GetActionScore());
 
-                if (linkedChildActions[i].action.GetActionScore() >= topActionScore)
+                if (linkedChildActions[i].GetActionScore() >= topActionScore)
                 {
-                    topAction = linkedChildActions[i].action;
-                    topActionScore = linkedChildActions[i].action.GetActionScore();
+                    topAction = linkedChildActions[i];
+                    topActionScore = linkedChildActions[i].GetActionScore();
                     topLinkedActionIndex = i;
                 }
             }
@@ -241,10 +244,10 @@ public class ActionBehaviour : MonoBehaviour
     {
         for (int i = 0; i < linkedChildActions.Count; i++)
         {
-            if (linkedChildActions[i].action.name == actionName)
+            if (linkedChildActions[i].name == actionName)
             {
                 linkedChildActions[i].isActionEnabled = false;
-                linkedChildActions[i].action.SetActionScore(0.0f);
+                linkedChildActions[i].SetActionScore(0.0f);
             }
         }
     }

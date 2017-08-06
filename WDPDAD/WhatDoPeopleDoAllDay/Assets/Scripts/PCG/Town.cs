@@ -14,13 +14,15 @@ public class Town : MonoBehaviour
     // the list of compressed agent 'kernel's
     public List<AgentKernel> compressedAgents = new List<AgentKernel>();
 
+
+    public UIAgentManager agentManagerUI;
     
 
 
     // expanded agent stuff
 
     // used to hold all the uncompressed agents when they are instantiated
-    List<GameObject> townAgents = new List<GameObject>();
+    public List<GameObject> townAgents = new List<GameObject>();
     // the gameobject in the editor hierarchy that is used to hold all the agents
     public GameObject agents;
 
@@ -31,7 +33,6 @@ public class Town : MonoBehaviour
 
     private ActionBehaviour tempRootaction;
 
-    public GameObject townExistAction;
 
     [Header("Occupations")]
     public GameObject Blacksmithing;
@@ -102,16 +103,18 @@ public class Town : MonoBehaviour
 
             // give the agent its base 'exist' action, 
             tempRootaction = newActions.GetComponent<ActionBehaviour>();
+            
+
 
             // get + instantiate the object for the agent's occupation
             GameObject occupationObject = Instantiate(occupationDictionary[agentKernel.occupation], newActions.transform.position, Quaternion.identity);
 
-            foreach (LinkedActionBehaviour childAction in tempRootaction.linkedChildActions)
-                if (childAction.action.name == "Work")
+            foreach (ActionBehaviour childAction in tempRootaction.linkedChildActions)
+                if (childAction.name == "Work")
                 {
                     occupationObject.SetActive(true);
 
-                    childAction.action.linkedChildActions.Add(occupationObject.GetComponent<LinkedActionBehaviour>());
+                    childAction.linkedChildActions.Add(occupationObject.GetComponent<ActionBehaviour>());
 
                     //set the parent object in the hierarchy
                     occupationObject.transform.parent = childAction.transform;
@@ -120,12 +123,18 @@ public class Town : MonoBehaviour
 
 
             // and build the personality 
-            newAgentCharacter.ActivateAgent(tempRootaction, agentKernel.OpennessToExperience, agentKernel.Concientiousness, agentKernel.Extroversion, agentKernel.Agreeableness, agentKernel.Neuroticism);
+            newAgentCharacter.ActivateAgent(tempRootaction, /*tempSocialAction,*/ agentKernel.OpennessToExperience, agentKernel.Concientiousness, agentKernel.Extroversion, agentKernel.Agreeableness, agentKernel.Neuroticism);
 
 
 
             // get the actions to run their StartAwake function, gives all actions their location and owner
             newActions.BroadcastMessage("StartAwake");
+
+
+
+
+            //add to the town's population
+            townAgents.Add(newAgent);
         }
             
     }

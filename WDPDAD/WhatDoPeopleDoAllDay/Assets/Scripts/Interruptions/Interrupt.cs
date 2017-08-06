@@ -72,20 +72,20 @@ public class Interrupt : MonoBehaviour {
         // get the relevant relationship parameter
         AgentStateParameter relationshipInQuestion = thisAgentPersonality.GetRelationship(origin);
         // set the relationship for consideration
-        thisAgent.socialInteruption.action.considerations[0].agentStatePar = relationshipInQuestion;
+        thisAgent.socialInteruption.considerations[0].agentStatePar = relationshipInQuestion;
 
         // calculate the utility
-        thisAgent.socialInteruption.action.EvaluateActionUtil();
+        thisAgent.socialInteruption.EvaluateActionUtil();
 
         if (isDebugging)
-            Debug.Log("Social interaction score: " + thisAgent.socialInteruption.action.GetActionScore());
+            Debug.Log("Social interaction score: " + thisAgent.socialInteruption.GetActionScore());
 
-        if (thisAgent.socialInteruption.action.GetActionScore() >= socialUtilThreshold)
+        if (thisAgent.socialInteruption.GetActionScore() >= socialUtilThreshold)
         {
             // set relationship variable for all social actions
-            foreach (LinkedActionBehaviour socialAction in thisAgent.socialInteruption.action.linkedChildActions)
+            foreach (ActionBehaviour socialAction in thisAgent.socialInteruption.linkedChildActions)
             {
-                socialAction.action.considerations[0].agentStatePar = relationshipInQuestion;
+                socialAction.considerations[0].agentStatePar = relationshipInQuestion;
             }
 
             return true;
@@ -104,14 +104,14 @@ public class Interrupt : MonoBehaviour {
 
         //Debug.Log("Social interaction initiated");
 
-        thisAgent.linkedRootAction.action.TopAction = null;
+        thisAgent.linkedRootAction.TopAction = null;
 
         //set 'location' of social interaction
-        thisAgent.socialInteruption.action.location = sender.transform;
+        thisAgent.socialInteruption.location = sender.transform;
 
         // set the new top action
-        thisAgent.linkedRootAction.action.TopAction = thisAgent.socialInteruption.action;
-        thisAgent.linkedRootAction.action.ResetTimer();
+        thisAgent.linkedRootAction.TopAction = thisAgent.socialInteruption;
+        thisAgent.linkedRootAction.ResetTimer();
     }
 
 

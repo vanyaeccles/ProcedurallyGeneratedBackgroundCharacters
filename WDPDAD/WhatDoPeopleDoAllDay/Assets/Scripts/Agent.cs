@@ -11,9 +11,9 @@ public class Agent : MonoBehaviour
 
     public bool consoleLogging = false;
     
-    public LinkedActionBehaviour linkedRootAction;
+    public ActionBehaviour linkedRootAction;
 
-    public LinkedActionBehaviour socialInteruption;
+    public ActionBehaviour socialInteruption;
 
     
 
@@ -23,25 +23,27 @@ public class Agent : MonoBehaviour
         agentName = name;
     }
 
-    public void SetSocialInterruption()
+    public void SetSocialInterruption(/*ActionBehaviour arg*/)
     {
         //link up the social interruption action
-        foreach (LinkedActionBehaviour action in linkedRootAction.action.linkedChildActions)
+        foreach (ActionBehaviour action in linkedRootAction.linkedChildActions)
         {
-            if (action.action.name == "Socialise")
+            if (action.name == "Socialise")
                 socialInteruption = action;
         }
+
+        //socialInteruption = arg;
     }
 
     public void SetRootAction(ActionBehaviour arg)
     {
-        linkedRootAction.action = arg;
+        linkedRootAction = arg;
     }
 
     public void UpdateAI()
     {
         // Performs the 'exist' action
-        linkedRootAction.action.UpdateAction();
+        linkedRootAction.UpdateAction();
     }
 
 
@@ -62,7 +64,7 @@ public class Agent : MonoBehaviour
 
     public void SetVoidActionDelegate(string name, ActionBehaviour.Del del)
     {
-         CheckActionChildren(linkedRootAction.action, name, del);
+        CheckActionChildren(linkedRootAction, name, del);
     }
 
 
@@ -72,9 +74,16 @@ public class Agent : MonoBehaviour
         return;
     }
 
-    public void CheckActionChildren(ActionBehaviour action, string name, ActionBehaviour.Del del)
+    public void CheckActionChildren(ActionBehaviour action, string _name, ActionBehaviour.Del del)
     {
-        if (action.name == name)
+
+        if (action == null)
+        {
+            Debug.Log("Bingo " + action + _name);
+        }
+            
+
+        if (action.GetName() == _name)
         {
             SetActionDelegate(action, del);
             return;
@@ -83,7 +92,7 @@ public class Agent : MonoBehaviour
         else if (!action.isLeafAction)
         {
             for (int i = 0; i < action.linkedChildActions.Count; i++)
-                CheckActionChildren(action.linkedChildActions[i].action, name, del);
+                CheckActionChildren(action.linkedChildActions[i], _name, del);
         }
 
         else

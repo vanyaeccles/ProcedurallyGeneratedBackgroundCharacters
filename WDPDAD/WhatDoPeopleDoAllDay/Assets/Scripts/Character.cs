@@ -59,7 +59,7 @@ public class Character : MonoBehaviour
 
 
 
-    public void ActivateAgent(ActionBehaviour _action, float O, float C, float E, float A, float N)
+    public void ActivateAgent(ActionBehaviour _action, /*ActionBehaviour _socialAction,*/ float O, float C, float E, float A, float N)
     {
         //Debug.Log("activating agent");
 
@@ -175,7 +175,7 @@ public class Character : MonoBehaviour
     {
         runningActions.Clear();
 
-        ActionBehaviour runningAction = thisAgent.linkedRootAction.action;
+        ActionBehaviour runningAction = thisAgent.linkedRootAction;
         // do a quick pass down the hierarchy
         while(!runningAction.isLeafAction)
         {
@@ -363,6 +363,7 @@ public class Character : MonoBehaviour
         thisAgent.SetVoidActionDelegate("WorkDiligently", WorkDiligently);
         thisAgent.SetVoidActionDelegate("SleepOnTheJob", SleepOnTheJob);
         thisAgent.SetVoidActionDelegate("SellWares", SellWares);
+
         thisAgent.SetVoidActionDelegate("Socialise", Socialise);
         thisAgent.SetVoidActionDelegate("SocialiseNice", SocialiseNice);
         thisAgent.SetVoidActionDelegate("SocialiseMean", SocialiseMean);

@@ -4,7 +4,7 @@ using System;
 // This specifies an action that belongs to a specific NPC
 
 [Serializable]
-public class LinkedActionBehaviour : MonoBehaviour
+public class LinkedActionBehaviour
 {
     public ActionBehaviour action;
     public bool isActionEnabled = true;

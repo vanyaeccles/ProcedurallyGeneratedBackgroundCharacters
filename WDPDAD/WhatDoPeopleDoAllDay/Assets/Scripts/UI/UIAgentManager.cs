@@ -37,8 +37,8 @@ public class UIAgentManager : MonoBehaviour {
 
     void Start()
     {
-        SetActiveAgent(defaultAgent);
-        currentCharacter = defaultAgent.GetComponent<Character>();
+        //SetActiveAgent(defaultAgent);
+        //currentCharacter = defaultAgent.GetComponent<Character>();
 
 
         // start with the player's camera
@@ -46,6 +46,17 @@ public class UIAgentManager : MonoBehaviour {
     }
 
 	
+    void NewAgent(GameObject _agent)
+    {
+        // add the character to the list
+        characters.Add(_agent.GetComponent<Character>());
+
+        SetActiveAgent(_agent);
+
+        
+
+    }
+
 
 
     // click event
