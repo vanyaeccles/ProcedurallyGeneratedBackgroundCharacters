@@ -105,6 +105,8 @@
     <Compile Include="Assets\Scripts\Relationship.cs" />
     <Compile Include="Assets\Scripts\SimpleAgent\NavAgent.cs" />
     <Compile Include="Assets\Scripts\TownInfo.cs" />
+    <Compile Include="Assets\Scripts\UI\AgentButton.cs" />
+    <Compile Include="Assets\Scripts\UI\AgentButtonManager.cs" />
     <Compile Include="Assets\Scripts\UI\AgentInfoBoard.cs" />
     <Compile Include="Assets\Scripts\UI\OnOffScript.cs" />
     <Compile Include="Assets\Scripts\UI\UIActivePanel.cs" />

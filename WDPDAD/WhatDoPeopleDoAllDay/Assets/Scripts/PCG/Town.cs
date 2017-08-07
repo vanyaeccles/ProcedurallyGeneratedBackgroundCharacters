@@ -14,8 +14,8 @@ public class Town : MonoBehaviour
     // the list of compressed agent 'kernel's
     public List<AgentKernel> compressedAgents = new List<AgentKernel>();
 
-
     public UIAgentManager agentManagerUI;
+    
     
 
 
@@ -46,6 +46,7 @@ public class Town : MonoBehaviour
 
 
 
+
     // Use this for initialization
     void Start ()
     {
@@ -53,91 +54,95 @@ public class Town : MonoBehaviour
         BuildOccupationDictionary();
 	}
 	
-	// Update is called once per frame
-	void Update ()
+
+
+
+    void UnZipAgent(AgentKernel _kernel)
     {
+        //print("agent instantiated");
+
+
+        // get the compressed agent
+        AgentKernel agentKernel = _kernel;
+
+        // instantiate the agent
+        townAgents.Add(Instantiate(baseAgent, agentKernel.homeLocation.position, Quaternion.identity));
+
+
+        GameObject newAgent = townAgents[townAgents.Count - 1];
+        newAgent.SetActive(true);
+
+
+        // build the agent character
+        Character newAgentCharacter = newAgent.GetComponent<Character>();
+
+        // build the agent from the given kernel
+        newAgentCharacter.name = agentKernel.Name;
+        newAgentCharacter.homeLocation = agentKernel.homeLocation;
+
+
+        //Add the agent to the UI
+        agentManagerUI.NewAgent(newAgent);
 
 
 
 
-        // spawns a single agent
-        if (Input.GetKey("b") && !single)
-        {
-            single = true;
 
-            //print("agent instantiated");
-
-
-            // get the compressed agent
-            AgentKernel agentKernel = compressedAgents[compressedAgents.Count - 1];
-
-            // instantiate the agent
-            townAgents.Add(Instantiate(baseAgent, agentKernel.homeLocation.position, Quaternion.identity));
-
-            
-            GameObject newAgent = townAgents[townAgents.Count - 1];
-            newAgent.SetActive(true);
+        //set the action hierarchy
+        // make an instance of the gameobject, set it as a child of the new agent
+        GameObject newActions = Instantiate(baseAction, newAgent.transform.position, Quaternion.identity);
+        newActions.SetActive(true);
+        newActions.transform.parent = newAgent.transform;
 
 
-            // build the agent character
-            Character newAgentCharacter = newAgent.GetComponent<Character>();
-
-            // build the agent from the given kernel
-            newAgentCharacter.name = agentKernel.Name;
-            newAgentCharacter.homeLocation = agentKernel.homeLocation;
+        // give the agent its base 'exist' action, 
+        tempRootaction = newActions.GetComponent<ActionBehaviour>();
 
 
 
+        // get + instantiate the object for the agent's occupation
+        GameObject occupationObject = Instantiate(occupationDictionary[agentKernel.occupation], newActions.transform.position, Quaternion.identity);
 
-            //set the occupation
-            //newAgentCharacter.occupation = OccupationType.1;
+        foreach (ActionBehaviour childAction in tempRootaction.linkedChildActions)
+            if (childAction.name == "Work")
+            {
+                occupationObject.SetActive(true);
 
+                childAction.linkedChildActions.Add(occupationObject.GetComponent<ActionBehaviour>());
 
-
-            //set the action hierarchy
-            // make an instance of the gameobject, set it as a child of the new agent
-            GameObject newActions = Instantiate(baseAction, newAgent.transform.position, Quaternion.identity);
-            newActions.SetActive(true);
-            newActions.transform.parent = newAgent.transform;
-
-
-            // give the agent its base 'exist' action, 
-            tempRootaction = newActions.GetComponent<ActionBehaviour>();
-            
-
-
-            // get + instantiate the object for the agent's occupation
-            GameObject occupationObject = Instantiate(occupationDictionary[agentKernel.occupation], newActions.transform.position, Quaternion.identity);
-
-            foreach (ActionBehaviour childAction in tempRootaction.linkedChildActions)
-                if (childAction.name == "Work")
-                {
-                    occupationObject.SetActive(true);
-
-                    childAction.linkedChildActions.Add(occupationObject.GetComponent<ActionBehaviour>());
-
-                    //set the parent object in the hierarchy
-                    occupationObject.transform.parent = childAction.transform;
-                }
-                    
-
-
-            // and build the personality 
-            newAgentCharacter.ActivateAgent(tempRootaction, /*tempSocialAction,*/ agentKernel.OpennessToExperience, agentKernel.Concientiousness, agentKernel.Extroversion, agentKernel.Agreeableness, agentKernel.Neuroticism);
+                //set the parent object in the hierarchy
+                occupationObject.transform.parent = childAction.transform;
+            }
 
 
 
-            // get the actions to run their StartAwake function, gives all actions their location and owner
-            newActions.BroadcastMessage("StartAwake");
+        // and build the personality 
+        newAgentCharacter.SetupAgent(tempRootaction, /*tempSocialAction,*/ agentKernel.OpennessToExperience, agentKernel.Concientiousness, agentKernel.Extroversion, agentKernel.Agreeableness, agentKernel.Neuroticism);
 
 
 
+        // get the actions to run their StartAwake function, gives all actions their location and owner
+        newActions.BroadcastMessage("StartAwake");
 
-            //add to the town's population
-            townAgents.Add(newAgent);
-        }
-            
+
+        //add to the town's population
+        townAgents.Add(newAgent);
+
+        // finally activate the agent
+        newAgentCharacter.SetActive();
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -153,15 +158,34 @@ public class Town : MonoBehaviour
 
     #region LOD Physics checking
 
-    //void OnTriggerEnter(Collision collision)
-    //{
-    //    //expand the agents
-    //}
+    void OnTriggerEnter(Collider collision)
+    {
+        //expand the agents
+        if (!single)
+        {
+            single = true;
 
-    //void OnTriggerExit(Collision collision)
-    //{
-    //    //collapse the agents
-    //}
+
+            foreach (AgentKernel kern in compressedAgents)
+                UnZipAgent(kern);
+        }
+    }
+
+
+
+    void OnTriggerExit(Collider collision)
+    {
+        //collapse the agents
+
+        foreach (GameObject agent in townAgents)
+            Destroy(agent);
+
+        //@TODO need to destroy agent references in UI as well
+
+
+        Debug.Log("THEY ARE GONE");
+
+    }
 
     #endregion
 

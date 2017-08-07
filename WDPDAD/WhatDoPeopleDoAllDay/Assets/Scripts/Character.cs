@@ -10,7 +10,7 @@ public class Character : MonoBehaviour
     public Occupation occupation; // their job
     public Personality personality; // The personality game object holds personality + state parameters
 
-
+    bool isActive = false;
 
 
     //agent
@@ -59,7 +59,7 @@ public class Character : MonoBehaviour
 
 
 
-    public void ActivateAgent(ActionBehaviour _action, /*ActionBehaviour _socialAction,*/ float O, float C, float E, float A, float N)
+    public void SetupAgent(ActionBehaviour _action, /*ActionBehaviour _socialAction,*/ float O, float C, float E, float A, float N)
     {
         //Debug.Log("activating agent");
 
@@ -75,10 +75,16 @@ public class Character : MonoBehaviour
         SetActionDelegates();
     }
 
-
+    public void SetActive()
+    {
+        isActive = !isActive;
+    }
 
     void Update()
     {
+        if (!isActive)
+            return;
+
         // Perform utility decision making and behaviour
         thisAgent.UpdateAI();
 

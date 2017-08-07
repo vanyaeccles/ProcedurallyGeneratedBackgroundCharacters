@@ -59,17 +59,21 @@ public class ActionBehaviour : MonoBehaviour
     // this function must be called when creating an agent
     public void StartAwake()
     {
+
         owner = FindOwner(this.gameObject);
 
         // Sets the owner for all considerations so they can set their weight value
         for (int i = 0; i < considerations.Count; i++)
         {
             considerations[i].owner = this.owner;
+
+            // set the state parameter
+            considerations[i].agentStatePar = owner.personality.stateParameterDictionary[considerations[i].ConsiderationParameter];
+
             considerations[i].SetWeight();
         }
 
         GetLocation();
-
     }
 
 

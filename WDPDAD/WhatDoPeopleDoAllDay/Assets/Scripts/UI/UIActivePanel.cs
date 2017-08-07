@@ -33,7 +33,8 @@ public class UIActivePanel : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        //SetAgent(activeCharacter);
+        if(activeCharacter != null)
+            SetAgent(activeCharacter);
 	}
 
    

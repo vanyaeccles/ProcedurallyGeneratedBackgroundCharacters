@@ -47,11 +47,6 @@ public class Agent : MonoBehaviour
     }
 
 
-    public void StoreAction()
-    {
-
-    }
-
 
 
 

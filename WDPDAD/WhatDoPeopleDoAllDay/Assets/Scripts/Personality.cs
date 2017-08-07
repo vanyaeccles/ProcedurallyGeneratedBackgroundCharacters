@@ -21,6 +21,7 @@ public class Personality : MonoBehaviour {
     [Header("Agent State Parameters")]
     public AgentStateVarFloat hunger;
     public AgentStateVarFloat energy, wealth, mood, temper, sociability, soberness, resources;
+ 
 
     [Header("Relationships")]
     public List<Relationship> AgentRelationships = new List<Relationship>();
@@ -28,10 +29,10 @@ public class Personality : MonoBehaviour {
     //private GameObject RelationshipsHolder;
 
     [Header("Global")]
-    public AgentStateParameter timeofday;
+    public AgentStateVarFloat timeofday;
     public GlobalAgentProperties globalAgentInfo;
 
-
+    public Dictionary<string, AgentStateVarFloat> stateParameterDictionary = new Dictionary<string, AgentStateVarFloat>();
 
     // PCG variables
     private PRNG prng;
@@ -42,6 +43,8 @@ public class Personality : MonoBehaviour {
 
     public void Awake()
     {
+        GenerateStateParameterDictionary();
+
         // get the global agent info
         globalAgentInfo = GameObject.Find("GlobalValues").GetComponent<GlobalAgentProperties>();
 
@@ -531,6 +534,22 @@ public class Personality : MonoBehaviour {
 
     #endregion
 
+
+    void GenerateStateParameterDictionary()
+    {
+        stateParameterDictionary.Add("Hunger", hunger);
+        stateParameterDictionary.Add("Energy", energy);
+        stateParameterDictionary.Add("Wealth", wealth);
+        stateParameterDictionary.Add("Mood", mood);
+        stateParameterDictionary.Add("Temper", temper);
+        stateParameterDictionary.Add("Sociability", sociability);
+        stateParameterDictionary.Add("Soberness", soberness);
+        stateParameterDictionary.Add("Resources", resources);
+        stateParameterDictionary.Add("TimeOfDay", timeofday);
+
+        // temporary, until its set
+        stateParameterDictionary.Add("Relationship", sociability);
+    }
 
 
 }

@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class UIAgentManager : MonoBehaviour {
 
-
+    //for managing agent selection buttons
+    public AgentButtonManager agentButtonManager;
 
     // for displaying info
     public UIActivePanel activePanel;
@@ -16,7 +17,7 @@ public class UIAgentManager : MonoBehaviour {
 
     //the currently active agent
     private Character currentCharacter;
-    public GameObject defaultAgent;
+
 
 
     // the currently active camera
@@ -46,15 +47,25 @@ public class UIAgentManager : MonoBehaviour {
     }
 
 	
-    void NewAgent(GameObject _agent)
+    public void NewAgent(GameObject _agent)
     {
+        //make a new button for the agent
+        agentButtonManager.CreateNewAgentButton(_agent);
+
+
+        Character newChar = _agent.GetComponent<Character>();
+
         // add the character to the list
-        characters.Add(_agent.GetComponent<Character>());
+        characters.Add(newChar);
+
+        //add the camera to the list
+        cameras.Add(newChar.agentCamera);
+        agentCams.Add(newChar.name, newChar.agentCamera);
 
         SetActiveAgent(_agent);
 
-        
-
+        // keep the player's character until agent is selected
+        SetCamera("player");
     }
 
 
@@ -93,14 +104,13 @@ public class UIAgentManager : MonoBehaviour {
         cameras.Add(playerCam);
         agentCams.Add("player", playerCam);
 
-
-        //add the camera
-        foreach (Character _char in characters)
-        {
-            cameras.Add(_char.agentCamera);
-            // add each agent/camera pair to dictionary
-            agentCams.Add(_char.name, _char.agentCamera);
-        }
+        ////add the camera
+        //foreach (Character _char in characters)
+        //{
+        //    cameras.Add(_char.agentCamera);
+        //    // add each agent/camera pair to dictionary
+        //    agentCams.Add(_char.name, _char.agentCamera);
+        //}
     }
 
     // called when selecting agents to follow with camera
