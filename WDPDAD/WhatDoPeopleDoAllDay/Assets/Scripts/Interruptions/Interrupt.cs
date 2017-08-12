@@ -13,7 +13,7 @@ public class Interrupt : MonoBehaviour {
 
     bool isSocial = true;
     bool isSeekingAssist = false;
-    float socialUtilThreshold = 0.0f;
+    float socialUtilThreshold = 0.5f;
 
     Interrupt interruptSender;
     Interrupt previousInterrupt;
@@ -45,7 +45,9 @@ public class Interrupt : MonoBehaviour {
                 interruptSender = sender;
                 previousInterrupt = sender;
 
-                //Debug.Log("My name: " + name + " sender: " + sender.name);
+
+                if(isDebugging)
+                    Debug.Log("My name: " + name + " sender: " + sender.name);
 
 
                 // tell the sender to initialise social action 
@@ -59,7 +61,7 @@ public class Interrupt : MonoBehaviour {
 
         if(assist)
         {
-
+            // 'assist' interrupt actions not yet implemented
         }
     }
 
@@ -102,7 +104,8 @@ public class Interrupt : MonoBehaviour {
 
         // pause action hierarchy, store original topaction @TODO
 
-        //Debug.Log("Social interaction initiated");
+        if (isDebugging)
+            Debug.Log("Social interaction initiated");
 
         thisAgent.linkedRootAction.TopAction = null;
 
@@ -130,9 +133,10 @@ public class Interrupt : MonoBehaviour {
             {
                 c.gameObject.GetComponent<Interrupt>().ReceiveInterrupt(this, this.name, isSocial, isSeekingAssist);
             }
-                
 
-            //Debug.Log("interuption sent");
+
+            if (isDebugging)
+                Debug.Log("interuption sent");
         }
     }
 

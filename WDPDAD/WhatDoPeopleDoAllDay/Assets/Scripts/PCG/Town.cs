@@ -177,13 +177,13 @@ public class Town : MonoBehaviour
     {
         //collapse the agents
 
-        foreach (GameObject agent in townAgents)
-            Destroy(agent);
+        //foreach (GameObject agent in townAgents)
+            //Destroy(agent);
 
         //@TODO need to destroy agent references in UI as well
 
 
-        Debug.Log("THEY ARE GONE");
+        //Debug.Log("THEY ARE GONE");
 
     }
 

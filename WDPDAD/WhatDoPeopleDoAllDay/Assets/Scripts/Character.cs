@@ -5,7 +5,10 @@ using UnityEngine.AI;
 
 public class Character : MonoBehaviour
 {
-    //non-collapsable items, must be set when building the agent
+    public bool isDebugging;
+
+
+    //non-collapsable items from agent kernel, must be set when building the agent
     public Transform homeLocation; // their house
     public Occupation occupation; // their job
     public Personality personality; // The personality game object holds personality + state parameters
@@ -40,6 +43,8 @@ public class Character : MonoBehaviour
     public List<AgentLog> behaviourLog = new List<AgentLog>();
     // the currently running actions
     public List<string> runningActions = new List<string>();
+    ActionBehaviour previousAction;
+    
 
     // for holding all the locations
     public Dictionary<string, Transform> locationDictionary = new Dictionary<string, Transform>();
@@ -50,6 +55,9 @@ public class Character : MonoBehaviour
         // set up agent and navmesh agent
         thisAgent = GetComponent<Agent>();
         Walker = GetComponent<NavMeshAgent>();
+
+        //SetNaveMeshAgentSpeed();
+
         // get the important external objects
         clock = GameObject.Find("Sun").GetComponent<DayNightCycle>();
         towninfo = GameObject.Find("Town").GetComponent<TownInfo>();
@@ -59,9 +67,10 @@ public class Character : MonoBehaviour
 
 
 
-    public void SetupAgent(ActionBehaviour _action, /*ActionBehaviour _socialAction,*/ float O, float C, float E, float A, float N)
+    public void SetupAgent(ActionBehaviour _action, float O, float C, float E, float A, float N)
     {
-        //Debug.Log("activating agent");
+        if (isDebugging)
+            Debug.Log("activating agent");
 
         // set the actions
         thisAgent.SetRootAction(_action);
@@ -70,6 +79,8 @@ public class Character : MonoBehaviour
         // build the agent's personality 
         personality.GeneratePersonality(O, C, E, A, N);
 
+        // set the initial 
+        previousAction = _action;
 
         // create the action delegates
         SetActionDelegates();
@@ -97,6 +108,12 @@ public class Character : MonoBehaviour
 
     #region MOVEMENT
 
+
+    void SetNaveMeshAgentSpeed()
+    {
+        Walker.speed *= UtilityTime.time;
+    }
+
     void Move()
     {
         // scale animation speed with navmeshagent velocity
@@ -104,7 +121,7 @@ public class Character : MonoBehaviour
 
         //Update movement
         Walker.SetDestination(target.position);
-        //Walker.speed = Walker.speed * UtilityTime.speed;
+        
         
 
         if (Vector3.Distance(transform.position, target.position) < 3.0f)
@@ -163,11 +180,20 @@ public class Character : MonoBehaviour
 
     public void LogActionBegin(ActionBehaviour _action)
     {
+        // check if its the same action
+        if (_action.name == previousAction.name)
+            return;
+
+        if (isDebugging)
+            Debug.Log(name + " " + _action + " began");
+
         float currentTime = clock.timeOfDay;
         behaviourLog.Add(new AgentLog(_action.name, currentTime));
 
         // run this once to get the action decision hierarchy
         GetRunningActions();
+
+        previousAction = _action;
     }
 
     public void LogActionEnd()
@@ -380,7 +406,7 @@ public class Character : MonoBehaviour
 
 
   
-    // for modification whe performing actions
+    // for modification when performing actions
     void ConstructStateVector()
     {
         hunger = personality.hunger;

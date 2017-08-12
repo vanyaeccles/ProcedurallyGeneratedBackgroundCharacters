@@ -195,7 +195,6 @@ public class GlobalAgentProperties : MonoBehaviour
     // builds the dictionary that maps from string values (for each agent state variable) to integers
     private void BuildStateVarDictionary()
     {
-        //@TODO fix naming convention to avoid the multiple dictionary entries to the same integer
 
 
         // timeofday relationship 	wealth	hunger	energy	mood	temper	sociability	soberness
@@ -205,7 +204,6 @@ public class GlobalAgentProperties : MonoBehaviour
 
         StateVarDictionary.Add("Relationship", 1);
         StateVarDictionary.Add("relationship", 1);
-        StateVarDictionary.Add("Agent1", 2);
 
         StateVarDictionary.Add("Wealth", 2);
         StateVarDictionary.Add("wealth", 2);

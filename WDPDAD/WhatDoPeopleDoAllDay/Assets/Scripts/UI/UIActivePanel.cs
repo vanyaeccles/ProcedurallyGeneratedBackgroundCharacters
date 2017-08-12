@@ -3,17 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+// This manages the Active Panel UI, when an agent is selected it will load that agents history, state and current action info
+
 public class UIActivePanel : MonoBehaviour {
 
-    private DayNightCycle clock;
+    public DayNightCycle clock;
 
     public Character activeCharacter;
 
+    //UI gameobjects for holding text
+    public GameObject agent;
+    public GameObject state;
+    public GameObject history;
+    public GameObject action;
+    
+
     //text for displaying details
-    public Text AgentName;
-    public Text StateText;
-    public Text HistoryText;
-    public Text ActionText;
+    private Text AgentName;
+    private Text StateText;
+    private Text HistoryText;
+    private Text ActionText;
 
 
     public bool isDisplayingAgentHistory = false;
@@ -26,7 +36,10 @@ public class UIActivePanel : MonoBehaviour {
 
     public void Awake()
     {
-        clock = GameObject.Find("Sun").GetComponent<DayNightCycle>();
+        AgentName = agent.GetComponent<Text>();
+        HistoryText = history.GetComponent<Text>();
+        StateText = state.GetComponent<Text>();
+        ActionText = action.GetComponent<Text>();
     }
 
 	
@@ -34,21 +47,21 @@ public class UIActivePanel : MonoBehaviour {
 	void Update ()
     {
         if(activeCharacter != null)
+        {
             SetAgent(activeCharacter);
+        }
+            
 	}
 
    
     public void SetAgent(Character _character)
     {
-        //Debug.Log(_character);
 
         activeCharacter = _character;
 
-        // display the agent's name
-        SetName(_character.name);
 
 
-        if(isDisplayingAgentState)
+        if (isDisplayingAgentState)
         {
             SetState(_character.GetStats());
         }
@@ -67,9 +80,9 @@ public class UIActivePanel : MonoBehaviour {
 
 
 
-    void SetName(string name)
+    void SetName(string _name)
     {
-        AgentName.text = "Name: " + name + "\n" + "Current Time: " + clock.timeOfDay.ToString("F0");
+        AgentName.text = "Name: " + _name + "\n" + "Current Time: " + clock.timeOfDay.ToString("F0");
     }
 
     // displays the agent state in the state panel
@@ -105,10 +118,12 @@ public class UIActivePanel : MonoBehaviour {
 
     // displays the agent history in the history panel
     void SetHistory()
-    {   // @TODO could maybe be optimised
+    {   
         HistoryText.text =  "  Action         StartTime         EndTime \n";
 
-        foreach(AgentLog i in activeCharacter.behaviourLog)
+        HistoryText.text += "Total Number of Actions Performed: " + activeCharacter.behaviourLog.Count + "\n";
+
+        foreach (AgentLog i in activeCharacter.behaviourLog)
         {
             HistoryText.text += "\n  " + i.action + "     " + i.startTime.ToString("F1") + "            " + i.endTime.ToString("F1");
         }
@@ -123,10 +138,7 @@ public class UIActivePanel : MonoBehaviour {
     }
 
 
-
-
-
-
+   
 
 
     #region MODE SELECTION
@@ -173,7 +185,7 @@ public class UIActivePanel : MonoBehaviour {
 
 
 
-
+    // called when modes are changed
     void DeactivateModes()
     {
         isDisplayingAgentHistory = false;

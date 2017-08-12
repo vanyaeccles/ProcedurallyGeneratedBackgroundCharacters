@@ -38,9 +38,6 @@ public class UIAgentManager : MonoBehaviour {
 
     void Start()
     {
-        //SetActiveAgent(defaultAgent);
-        //currentCharacter = defaultAgent.GetComponent<Character>();
-
 
         // start with the player's camera
         SetCamera("player");
@@ -62,15 +59,13 @@ public class UIAgentManager : MonoBehaviour {
         cameras.Add(newChar.agentCamera);
         agentCams.Add(newChar.name, newChar.agentCamera);
 
-        SetActiveAgent(_agent);
-
         // keep the player's character until agent is selected
         SetCamera("player");
     }
 
 
 
-    // click event
+    // button click event
     // this activates the agent's UIonce the button has been clicked
     public void SetActiveAgent(GameObject agent)
     {
@@ -103,15 +98,8 @@ public class UIAgentManager : MonoBehaviour {
         //add the main (player) camera
         cameras.Add(playerCam);
         agentCams.Add("player", playerCam);
-
-        ////add the camera
-        //foreach (Character _char in characters)
-        //{
-        //    cameras.Add(_char.agentCamera);
-        //    // add each agent/camera pair to dictionary
-        //    agentCams.Add(_char.name, _char.agentCamera);
-        //}
     }
+
 
     // called when selecting agents to follow with camera
     public void SetCamera(string name)

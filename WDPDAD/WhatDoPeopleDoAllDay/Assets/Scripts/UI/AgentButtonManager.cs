@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// this is owned by the agent button grid
+//used to make a new button when the AgentUIManager is told to add a new agent by the Town script
+
+
 public class AgentButtonManager : MonoBehaviour
 {
     // the generic button object
@@ -26,7 +30,6 @@ public class AgentButtonManager : MonoBehaviour
         newAgentButtonInfo.agentManager = this.agentManager;
         newAgentButtonInfo.SetAgent(_agent);
         
-
     }
 
 }

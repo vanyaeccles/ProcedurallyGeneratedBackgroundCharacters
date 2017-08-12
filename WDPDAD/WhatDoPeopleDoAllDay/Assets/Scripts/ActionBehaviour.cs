@@ -21,11 +21,14 @@ public class ActionBehaviour : MonoBehaviour
     //public int priorityLevel;
     public bool isInterruptible;
     public bool isConsoleLogging;
+    public int historyStates = 10;
+    public float secondsBetweenEvaluations = 0.0f;
+
+    // for action addition, in order to specify agent-specific action location
     public bool isSelfAction;
     public bool isHomeAction;
 
-    public int historyStates = 10;
-    public float secondsBetweenEvaluations = 0.0f;
+    
 
     private ActionBehaviour previousAction, topAction;
     private float currentActionScore, topActionScore;
@@ -34,11 +37,12 @@ public class ActionBehaviour : MonoBehaviour
     private int topLinkedActionIndex;
 
 
+
     [HideInInspector]
     public List<string> actionHistory = new List<string>();
     //[HideInInspector]
     public float actionTimer = 0.0f;
-    [HideInInspector]
+    [HideInInspector] // the new action thats been chosen
     public bool newAction;
 
 
@@ -107,15 +111,17 @@ public class ActionBehaviour : MonoBehaviour
         }
 
         if (topAction == null)
-        {   // evaluate + choose a child action
+        {   
+            // evaluate + choose a child action
             EvaluateChildActions();
             actionTimer = TopAction.time;
 
-
-
-
+            // for the UI agent log
             if (topAction.isLeafAction)
+            {
+                // log the new action
                 owner.LogActionBegin(topAction);
+            }
         }
 
 
@@ -141,6 +147,7 @@ public class ActionBehaviour : MonoBehaviour
         if (actionTimer <= 0.0f) 
         { // action ended
 
+            // for the UI agent log
             if (topAction.isLeafAction)
                 owner.LogActionEnd();
 
@@ -153,15 +160,15 @@ public class ActionBehaviour : MonoBehaviour
 
             StopTimer();
 
-            EvaluateChildActions();
 
-            actionTimer = TopAction.time;
+
+            //EvaluateChildActions();
+
+            //actionTimer = TopAction.time;
         }
     }
 
-
-
-
+   
     
 
 
@@ -198,10 +205,16 @@ public class ActionBehaviour : MonoBehaviour
         {
             newAction = true;
         }
+        else
+            newAction = false;
         
 
         if (isConsoleLogging)
             Debug.Log(name + ". New topAction: " + topAction.name + ". With actionScore: " + topActionScore);
+
+
+        
+
 
 
         currentActionScore = topActionScore;
