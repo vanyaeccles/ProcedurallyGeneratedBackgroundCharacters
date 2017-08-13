@@ -90,6 +90,10 @@ public class UIActivePanel : MonoBehaviour {
     {
         StateText.text = "Parameter               Weight";
 
+        StateText.text += "\n Relationship                " + activeCharacter.personality.CheckWeight("relationship");
+        StateText.text += "\n Time of Day               " + activeCharacter.personality.CheckWeight("timeofday");
+
+
         StateText.text += ("\n Energy: " + stateVector[0].value.ToString("F0") + "          " + activeCharacter.personality.CheckWeight("energy")
             + "\n Hunger: " + stateVector[1].value.ToString("F0") + "          " + activeCharacter.personality.CheckWeight("hunger")
             + "\n Resources: " + stateVector[2].value.ToString("F0") + "          " + activeCharacter.personality.CheckWeight("resources")

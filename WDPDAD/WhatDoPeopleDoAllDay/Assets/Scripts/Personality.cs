@@ -17,6 +17,24 @@ public class Personality : MonoBehaviour {
     public float Neuroticism;
     List<float> personalityVector = new List<float>();
 
+    //modifiers
+    public float relationshipModifier;
+    public float hungerModifier;
+    public float energyModifier;
+    public float wealthModifier;
+    public float moodModifier;
+    public float temperModifier;
+    public float sociabilityModifier;
+    public float sobernessModifier;
+    public float resourcesModifier;
+
+
+
+
+
+
+
+
 
     [Header("Agent State Parameters")]
     public AgentStateVarFloat hunger;
@@ -53,6 +71,10 @@ public class Personality : MonoBehaviour {
         //GeneratePersonality();
     }
 
+    void Start()
+    {
+        //TestGaussianGenerator();
+    }
 
 
     // this is called to procedurally generate the action modifiers and the weights
@@ -90,18 +112,24 @@ public class Personality : MonoBehaviour {
     float GenerateWeight(int index1)
     {
         // returns a weight proportional to how much the agent cares about that state variable
-        // ie low 'concientiousness' would translate to a disregard for 'time of day' as a relevant variable
+        // ie high 'concientiousness' would translate to a regard for 'resources' as a relevant variable
+
+
 
         // map from -1.0,1.0 range to 0.0,1.0
-        float normO = NormaliseFloat(OpennessToExperience, 1.0f, -1.0f);
-        float normC = NormaliseFloat(Concientiousness, 1.0f, -1.0f);
-        float normE = NormaliseFloat(Extroversion, 1.0f, -1.0f);
-        float normA = NormaliseFloat(Agreeableness, 1.0f, -1.0f);
-        float normN = NormaliseFloat(Neuroticism, 1.0f, -1.0f);
+        //float normO = NormaliseFloat(OpennessToExperience, 1.0f, -1.0f);
+        //float normC = NormaliseFloat(Concientiousness, 1.0f, -1.0f);
+        //float normE = NormaliseFloat(Extroversion, 1.0f, -1.0f);
+        //float normA = NormaliseFloat(Agreeableness, 1.0f, -1.0f);
+        //float normN = NormaliseFloat(Neuroticism, 1.0f, -1.0f);
 
+        // use personality values as is (permits weights of < 1.0)
+        float normO = OpennessToExperience;
+        float normC = Concientiousness;
+        float normE = Extroversion;
+        float normA = Agreeableness;
+        float normN = Neuroticism;
 
-
-        // @TODO add some pseudorandom noise - pcg
 
         float oContrib = globalAgentInfo.personalityWeightInfluences[0, index1] * normO;
         float cContrib = globalAgentInfo.personalityWeightInfluences[1, index1] * normC;
@@ -152,24 +180,28 @@ public class Personality : MonoBehaviour {
         // as the modification vectors in the dictionary
 
         // get the agent personality specific modifiers 
-        float hungerModifier = GetActionModifier(1);
-        float energyModifier = GetActionModifier(2);
-        float wealthModifier = GetActionModifier(3);
-        float moodModifier = GetActionModifier(4);
-        float temperModifier = GetActionModifier(5);
-        float sociabilityModifier = GetActionModifier(6);
-        float sobernessModifier = GetActionModifier(7);
-        float resourcesModifier = GetActionModifier(8);
+        relationshipModifier = GetActionModifier(0);
+        hungerModifier = GetActionModifier(1);
+        energyModifier = GetActionModifier(2);
+        wealthModifier = GetActionModifier(3);
+        moodModifier = GetActionModifier(4);
+        temperModifier = GetActionModifier(5);
+        sociabilityModifier = GetActionModifier(6);
+        sobernessModifier = GetActionModifier(7);
+        resourcesModifier = GetActionModifier(8);
+
+        
 
         //Check values
-        //Debug.Log("hunger" + hungerModifier);
-        //Debug.Log("energy" + energyModifier);
-        //Debug.Log("wealth" + wealthModifier);
-        //Debug.Log("mood" + moodModifier);
-        //Debug.Log("temper" + temperModifier);
-        //Debug.Log("sociability" + sociabilityModifier);
-        //Debug.Log("soberness" + sobernessModifier);
-        //Debug.Log("resources" + resourcesModifier);
+        //Debug.Log("relationship " + relationshipModifier);
+        //Debug.Log("hunger " + hungerModifier);
+        //Debug.Log("energy " + energyModifier);
+        //Debug.Log("wealth " + wealthModifier);
+        //Debug.Log("mood " + moodModifier);
+        //Debug.Log("temper " + temperModifier);
+        //Debug.Log("sociability " + sociabilityModifier);
+        //Debug.Log("soberness " + sobernessModifier);
+        //Debug.Log("resources " + resourcesModifier);
 
 
         // Each action modifier is a combination of harcoded values that represent an action's effect on a variable
@@ -364,9 +396,6 @@ public class Personality : MonoBehaviour {
     float GetActionModifier(int varIndex)
     {
         // returns a modifier proportional to how much the state variable is affected by performing an action
-
-        // @TODO add some pseudorandom noise - pcg
-
         float oContrib = globalAgentInfo.personalityModifierInfluences[0, varIndex] * OpennessToExperience;
         float cContrib = globalAgentInfo.personalityModifierInfluences[1, varIndex] * Concientiousness;
         float eContrib = globalAgentInfo.personalityModifierInfluences[2, varIndex] * Extroversion;
@@ -377,7 +406,7 @@ public class Personality : MonoBehaviour {
         //the mean of the PCG distribution
         float originalModifier = oContrib + cContrib + eContrib + aContrib + nContrib;
 
-
+        // add some pseudorandom noise - pcg
         float pcgModifier = originalModifier + (float)randModifiers[varIndex];
 
         //Debug.Log("Original Modifier: " + originalModifier);
@@ -453,27 +482,45 @@ public class Personality : MonoBehaviour {
         randModifiers.Clear();
         randWeightModifiers.Clear();
 
-
+        // Generate the random Gaussian numbers for the action modifiers
         double mean = 0.0f;
-        double stdev = 1.0f;
-
+        double stdev = 0.5f;
         for (int i = 0; i < 9; i++)
         {
             // assuming the seed is the same, this will generate a the same list of numbers picked from a gaussian dist
             randModifiers.Add(prng.RandomGaussian(mean, stdev));
-
             //Debug.Log(prng.RandomGaussian(mean, stdev));
         }
 
+        // Generate the random Gaussian numbers for the parameter weights
+        // reset the mean + stddev for weights, these need to be less dramatic @TODO test this
+        mean = 1.0f; // mean parameter weight is 1
+        stdev = 0.3f;
         for (int i = 0; i < 20; i++)
         {
-            // reset the mean + stddev for weights, these need to be less dramatic @TODO test this
-            mean = 1.0f;
-            stdev = 0.2f; 
             randWeightModifiers.Add(prng.RandomGaussian(mean, stdev));
         }
     }
 
+
+    //void TestGaussianGenerator()
+    //{
+    //   double mean = 1.0f;
+    //   double stdev = 0.5f;
+
+    //   int times = 0;
+
+    //   double initialGaussian = prng.RandomGaussian(mean,stdev);
+    //   double currentGaussian = prng.RandomGaussian(mean, stdev);
+    
+    //   while(currentGaussian != initialGaussian)
+    //    {
+    //        times++;
+    //        currentGaussian = prng.RandomGaussian(mean, stdev);
+    //    }
+
+    //    Debug.Log("Period: " + times);
+    //}
 
 
     void GenerateSeeds()

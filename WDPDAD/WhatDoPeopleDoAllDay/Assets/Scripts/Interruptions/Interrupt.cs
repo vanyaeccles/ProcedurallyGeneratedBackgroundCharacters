@@ -82,7 +82,8 @@ public class Interrupt : MonoBehaviour {
         if (isDebugging)
             Debug.Log("Social interaction score: " + thisAgent.socialInteruption.GetActionScore());
 
-        if (thisAgent.socialInteruption.GetActionScore() >= socialUtilThreshold)
+        // if the utility of socialising beats the current utility score, then socialise
+        if (thisAgent.socialInteruption.GetActionScore() >= thisCharacter.behaviourLog[thisCharacter.behaviourLog.Count - 1].score)
         {
             // set relationship variable for all social actions
             foreach (ActionBehaviour socialAction in thisAgent.socialInteruption.linkedChildActions)

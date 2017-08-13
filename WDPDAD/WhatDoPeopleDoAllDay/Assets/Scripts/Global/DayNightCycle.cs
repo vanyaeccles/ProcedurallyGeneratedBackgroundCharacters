@@ -6,6 +6,8 @@ public class DayNightCycle : MonoBehaviour {
 
     public AgentStateVarFloat time;
 
+    public int days = 0;
+
     public float timeOfDay = 12.0f;
 
     public float angle = 0.0f;
@@ -33,7 +35,11 @@ public class DayNightCycle : MonoBehaviour {
         timeOfDay += hoursPerFrame;
         // a new day dawns
         if (timeOfDay >= 24.0f)
+        {
+            days++;
             timeOfDay = 0.0f;
+        }
+            
 
         time.value = timeOfDay;
     }

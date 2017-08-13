@@ -117,7 +117,7 @@ public class Town : MonoBehaviour
 
 
         // and build the personality 
-        newAgentCharacter.SetupAgent(tempRootaction, /*tempSocialAction,*/ agentKernel.OpennessToExperience, agentKernel.Concientiousness, agentKernel.Extroversion, agentKernel.Agreeableness, agentKernel.Neuroticism);
+        newAgentCharacter.SetupAgent(tempRootaction, agentKernel.OpennessToExperience, agentKernel.Concientiousness, agentKernel.Extroversion, agentKernel.Agreeableness, agentKernel.Neuroticism);
 
 
 
@@ -127,6 +127,10 @@ public class Town : MonoBehaviour
 
         //add to the town's population
         townAgents.Add(newAgent);
+
+
+
+
 
         // finally activate the agent
         newAgentCharacter.SetActive();

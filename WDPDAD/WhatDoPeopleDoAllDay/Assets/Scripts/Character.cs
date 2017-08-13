@@ -88,11 +88,15 @@ public class Character : MonoBehaviour
 
     public void SetActive()
     {
-        isActive = !isActive;
+        //isActive = !isActive;
     }
 
     void Update()
     {
+        if (Input.GetKeyDown("l"))
+            isActive = true;
+
+
         if (!isActive)
             return;
 
@@ -188,7 +192,7 @@ public class Character : MonoBehaviour
             Debug.Log(name + " " + _action + " began");
 
         float currentTime = clock.timeOfDay;
-        behaviourLog.Add(new AgentLog(_action.name, currentTime));
+        behaviourLog.Add(new AgentLog(_action.name, currentTime, _action.GetActionScore()));
 
         // run this once to get the action decision hierarchy
         GetRunningActions();

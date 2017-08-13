@@ -114,7 +114,8 @@ public class ActionBehaviour : MonoBehaviour
         {   
             // evaluate + choose a child action
             EvaluateChildActions();
-            actionTimer = TopAction.time;
+
+            actionTimer = topAction.GetTime();
 
             // for the UI agent log
             if (topAction.isLeafAction)
@@ -201,13 +202,13 @@ public class ActionBehaviour : MonoBehaviour
             }
         }
 
-        if (topAction != previousAction)
-        {
-            newAction = true;
-        }
-        else
-            newAction = false;
-        
+        //if (topAction != previousAction)
+        //{
+        //    newAction = true;
+        //}
+        //else
+        //    newAction = false;
+
 
         if (isConsoleLogging)
             Debug.Log(name + ". New topAction: " + topAction.name + ". With actionScore: " + topActionScore);
@@ -251,6 +252,12 @@ public class ActionBehaviour : MonoBehaviour
         }
         
     }
+
+    public float GetTime()
+    {
+        return time;
+    }
+
 
     public string GetName()
     {

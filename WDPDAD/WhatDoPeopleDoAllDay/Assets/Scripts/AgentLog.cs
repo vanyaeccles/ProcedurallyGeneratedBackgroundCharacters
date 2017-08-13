@@ -10,14 +10,17 @@ public class AgentLog {
 
     public string action;
 
+    public float score;
+
 
     public float startTime = 0.0f;
     public float endTime = 0.0f;
 
-    public AgentLog(string _action, float _startTime)
+    public AgentLog(string _action, float _startTime, float _score)
     {
         action = _action;
         startTime = _startTime;
+        score = _score;
     }
 
     public float EndTime
