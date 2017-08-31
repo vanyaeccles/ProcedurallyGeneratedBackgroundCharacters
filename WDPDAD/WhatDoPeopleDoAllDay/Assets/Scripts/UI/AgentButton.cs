@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+// This is used for agent buttons, each agent created will have an associated button created
+
 public class AgentButton : MonoBehaviour
 {
     // references to important objects

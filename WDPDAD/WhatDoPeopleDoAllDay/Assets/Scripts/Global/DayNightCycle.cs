@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// This is for moving the sun and printing the time to screen
+
 public class DayNightCycle : MonoBehaviour {
 
     public AgentStateVarFloat time;
@@ -17,7 +19,11 @@ public class DayNightCycle : MonoBehaviour {
 
     float anglesPerHour = 15.0f;
 
-	
+
+    public Rect timerect;
+
+
+
 	// Update is called once per frame
 	void Update ()
     {
@@ -42,5 +48,10 @@ public class DayNightCycle : MonoBehaviour {
             
 
         time.value = timeOfDay;
+    }
+
+    void OnGUI()
+    {
+        GUI.Label(timerect, "Time: " + timeOfDay.ToString("F2"));
     }
 }

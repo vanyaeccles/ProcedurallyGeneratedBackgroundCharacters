@@ -5,7 +5,7 @@ using UnityEngine;
 
 
     /*
-     * This is hardcoded stuff for the agents to build weights and action modifiers from
+     * This is hardcoded stuff (weight and modifier tables etc) for the agents to build weights and action modifiers from
      */
 
 
@@ -114,9 +114,9 @@ public class GlobalAgentProperties : MonoBehaviour
 
 
         // scale the effect
-        //for (int i = 0; i < personalityWeightInfluences.GetLength(0); i++)
-        //    for (int j = 0; j < personalityWeightInfluences.GetLength(1); j++)
-        //        personalityWeightInfluences[i, j] *= 0.6f;
+        for (int i = 0; i < personalityWeightInfluences.GetLength(0); i++)
+            for (int j = 0; j < personalityWeightInfluences.GetLength(1); j++)
+                personalityWeightInfluences[i, j] *= 0.5f;
     }
 
 
@@ -185,7 +185,7 @@ public class GlobalAgentProperties : MonoBehaviour
 
 
 
-        // limit the values to within -1.0 to +1.0
+        // scale the effect
         //for (int i = 0; i < personalityModifierInfluences.GetLength(0); i++)
         //    for (int j = 0; j < personalityModifierInfluences.GetLength(1); j++)
         //        personalityModifierInfluences[i, j] *= 0.2f;

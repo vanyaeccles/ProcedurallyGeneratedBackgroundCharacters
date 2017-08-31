@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// this just handles the minimize buttons at the top of UI panels
+// This just handles the minimize buttons at the top of UI panels
 
 public class OnOffScript : MonoBehaviour {
 

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-// adapted from http://paulbourke.net/miscellaneous/random/randomlib.c
 
-// maybe make this a global script? @TODO
+// This is the pseudorandom number generator, takes in a seed and generates uniform or gaussian random numbers
+// Owned by each agent
+
+// adapted from the C code PRNG library found at http://paulbourke.net/miscellaneous/random/randomlib.c
 
 
 public class PRNG : MonoBehaviour {
@@ -16,11 +18,6 @@ public class PRNG : MonoBehaviour {
     int i97, j97;
     int test = 0;
 	
-
-    void ShuffleValues()
-    {
-
-    }
 
 
     public void RandomInitialise(int ij, int kl)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// for setting agent + camera via UI buttons
+// For setting agent + camera via UI buttons
 
 public class UIAgentManager : MonoBehaviour {
 
@@ -90,7 +90,15 @@ public class UIAgentManager : MonoBehaviour {
 
 
 
-    #region CAMERA STUFF
+    public void CollapseAgents()
+    {
+        characters.Clear();
+        DeleteCameras();
+        agentButtonManager.DestroyButtons();
+    }
+
+
+    #region CAMERA BITS
 
     // this is used on awake to build the list + dictionary of cameras
     void SetupCameras()
@@ -113,6 +121,17 @@ public class UIAgentManager : MonoBehaviour {
         agentCams[name].enabled = true;
         activeCam = agentCams[name];
     }
+
+
+    void DeleteCameras()
+    {
+        cameras.Clear();
+        agentCams.Clear();
+
+        agentCams.Add("player", playerCam);
+        SetCamera("player");
+    }
+
 
     #endregion
 
